@@ -58,7 +58,7 @@ class LLMPredictor:
 
     def predict_next_tokens(self, input_text, *, temperature=1.0, model_lang="中文", top_k=10):
         """
-        预测下一个token
+        预测下一个token并使用Top-K随机采样
         
         参数:
             input_text (str): 输入文本
@@ -67,13 +67,9 @@ class LLMPredictor:
             top_k (int): 返回的top k个结果，默认为10
         """
         try:
-            # 获取对应语言的模型和分词器
             model, tokenizer = self._get_model_and_tokenizer(model_lang)
-
-            # 编码输入文本
             input_ids = tokenizer.encode(input_text, return_tensors='pt', add_special_tokens=True)
 
-            # 使用模型生成文本
             with torch.no_grad():
                 outputs = model(input_ids)
                 logits = outputs.logits
@@ -90,17 +86,37 @@ class LLMPredictor:
 
             # 获取概率最高的 K 个 tokens
             topk_probs, topk_indices = torch.topk(probabilities, top_k)
-
-            # 将 token IDs 转换为可读的 tokens
+            
+            # 对top-k的概率进行归一化
+            topk_probs = torch.softmax(topk_probs, dim=-1)
+            
+            # 使用归一化后的概率进行随机采样
+            chosen_idx = torch.multinomial(topk_probs[0], 1)
+            
+            # 重新排序tokens，将采样到的token放在第一位
+            selected_token = topk_indices[0][chosen_idx]
+            selected_prob = topk_probs[0][chosen_idx]
+            
+            # 获取所有候选tokens
             topk_tokens = tokenizer.convert_ids_to_tokens(topk_indices[0])
-
-            # 构建返回结果
+            
+            # 构建返回结果，确保采样的token在第一位
             results = []
+            selected_token_str = tokenizer.convert_ids_to_tokens(selected_token)[0]
+            results.append({
+                'token': selected_token_str,
+                'probability': float(selected_prob),
+                'is_sampled': True
+            })
+            
+            # 添加其他候选tokens
             for token, prob in zip(topk_tokens, topk_probs[0].tolist()):
-                results.append({
-                    'token': token,
-                    'probability': round(prob, 4)
-                })
+                if token != selected_token_str:
+                    results.append({
+                        'token': token,
+                        'probability': round(prob, 4),
+                        'is_sampled': False
+                    })
 
             return {
                 'language': model_lang,

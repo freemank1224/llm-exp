@@ -189,7 +189,7 @@ def main():
                 token = pred['token']
                 prob = pred['probability']
                 
-                cols = st.columns([2, 6, 2])
+                cols = st.columns([2, 5, 3])
                 with cols[0]:
                     st.write(f"Token: {token}")
                 with cols[1]:
