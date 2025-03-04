@@ -3,7 +3,6 @@ import torch
 import os
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-
 '''搭建前端界面'''
 import streamlit as st
 from model import LLMPredictor
@@ -197,6 +196,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
