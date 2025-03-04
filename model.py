@@ -42,7 +42,6 @@ class LLMPredictor:
             except Exception as e:
                 print(f"加载中文模型失败: {str(e)}")
                 return False
-            
         return True
 
     def _load_english_model(self):
