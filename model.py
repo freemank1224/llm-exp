@@ -73,7 +73,7 @@ class LLMPredictor:
                 raise ValueError("无法加载英文模型")
             return self.en_model, self.en_tokenizer
 
-    def generate_next_token(self, input_text, model_lang = "中文", temperature = 1.0, top_k = 10):
+    def generate_next_token(self, input_text, model_lang = "中文", temperature = 1.0, top_k = 5):
         # 1. Encode the input text
         try:
             active_model, active_tokenizer = self._get_model_and_tokenizer(model_lang)
@@ -92,6 +92,8 @@ class LLMPredictor:
                 next_token_probs = next_token_probs / temperature
 
             topk_probs, topk_indices = torch.topk(next_token_probs, top_k)
+
+            topk_probs = F.softmax(topk_probs, dim=-1)
 
             chosen_idx = torch.multinomial(topk_probs, 1)
 

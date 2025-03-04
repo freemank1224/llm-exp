@@ -1,9 +1,8 @@
-from transformers import GPT2Tokenizer, GPT2LMHeadModel, BertTokenizer
-import torch
-import os
-from transformers import AutoTokenizer, AutoModelForCausalLM
+# from transformers import GPT2Tokenizer, GPT2LMHeadModel, BertTokenizer
+# import torch
+# import os
+# from transformers import AutoTokenizer, AutoModelForCausalLM
 
-'''搭建前端界面'''
 import streamlit as st
 from model import LLMPredictor
 import time
@@ -13,7 +12,7 @@ def main():
     if 'predictor' not in st.session_state:
         st.session_state.predictor = LLMPredictor()
 
-    st.title("LLM 下一个 Token 预测演示")
+    st.title("下一个 Token 预测演示")
 
     # 初始化其他 session state
     if 'generated_text' not in st.session_state:
@@ -33,6 +32,10 @@ def main():
         st.session_state.temperature = 1.0
     if 'model_lang' not in st.session_state:
         st.session_state.model_lang = "中文"
+    if 'selected_token' not in st.session_state:
+        st.session_state.selected_token = None  # 新增：追踪选中的token
+    if 'generation_interval' not in st.session_state:
+        st.session_state.generation_interval = 0.5  # 添加默认生成间隔
 
     # 添加设置区域
     with st.sidebar:
@@ -62,15 +65,19 @@ def main():
                     st.session_state.is_running = False
                     st.rerun()
             
-            # 生成速度控制
-            st.session_state.generation_interval = st.slider(
+            # 修改生成速度控制的实现
+            generation_interval = st.slider(
                 "生成间隔 (秒)",
                 min_value=0.1,
                 max_value=2.0,
-                value=0.5,
+                value=st.session_state.generation_interval,
                 step=0.1,
+                key="interval_slider",
                 help="每个token生成之间的时间间隔"
             )
+            # 确保更新到 session state
+            if generation_interval != st.session_state.generation_interval:
+                st.session_state.generation_interval = generation_interval
 
         # 模型语言选择
         try:
@@ -128,17 +135,26 @@ def main():
             for pred in result['predictions']:
                 token = pred['token']
                 prob = pred['probability']
+                is_sampled = pred.get('is_sampled', True)  # 获取是否被采样选中
                 
+                # 创建一个带有背景色的列布局
+                col_style = "background-color: #90EE90;" if is_sampled else ""
                 cols = st.columns([2, 6, 2])
                 with cols[0]:
-                    st.write(f"Token: {token}")
+                    if is_sampled:
+                        st.markdown(f"**:green[Token: {token}]** 🎯")
+                    else:
+                        st.write(f"Token: {token}")
                 with cols[1]:
                     progress_container = st.container()
                     with progress_container:
                         progress_bar = st.progress(0)
                         progress_bar.progress(prob)
                 with cols[2]:
-                    st.write(f"{prob:.5f}")
+                    if is_sampled:
+                        st.markdown(f"**:green[{prob:.5f}]**")
+                    else:
+                        st.write(f"{prob:.5f}")
                     if not st.session_state.is_auto_mode:
                         if st.button("选择", key=f"use_{token}", help=f"点击将'{token}'添加到文本中"):
                             st.session_state.generated_text += token
@@ -146,10 +162,13 @@ def main():
 
             if st.session_state.is_auto_mode and st.session_state.is_running:
                 candidates = result['predictions']
-                print(candidates)
-                best_token = [item['token'] for item in candidates if item['is_sampled']][0]
-                # best_token = result['predictions'][0]['token']
-                st.session_state.generated_text += best_token
+                selected_token = [item['token'] for item in candidates if item['is_sampled']][0]
+                st.session_state.selected_token = selected_token  # 更新选中的token
+                st.session_state.generated_text += selected_token
+                
+                # 添加选中提示
+                st.success(f"已选择Token: {selected_token}")
+                
                 time.sleep(st.session_state.generation_interval)
                 st.rerun()
 
