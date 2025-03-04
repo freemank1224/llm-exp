@@ -1,5 +1,6 @@
 from transformers import GPT2Tokenizer, GPT2LMHeadModel, AutoTokenizer, AutoModelForCausalLM
 import torch
+import torch.nn.functional as F
 import os
 
 class LLMPredictor:
@@ -11,6 +12,14 @@ class LLMPredictor:
         self.en_model = None
         self.en_tokenizer = None
         self.current_lang = None
+
+        if torch.backends.mps.is_available():
+            self.device = "mps"
+        elif torch.cuda.is_available():
+            self.device = "cuda"
+        else:
+            self.device = "cpu"
+        # self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
     def _load_chinese_model(self):
         if self.zh_model is None:
@@ -26,9 +35,14 @@ class LLMPredictor:
                     cache_dir=self.cache_dir
                 )
                 self.current_lang = "中文"
+                # 2025.3.3 SEG BEGIN
+                self.zh_model.to(self.device)
+                print(f"ZH model is loaded on {self.device}")
+                # SEG END
             except Exception as e:
                 print(f"加载中文模型失败: {str(e)}")
                 return False
+            
         return True
 
     def _load_english_model(self):
@@ -40,6 +54,10 @@ class LLMPredictor:
                 if self.en_tokenizer.pad_token is None:
                     self.en_tokenizer.pad_token = self.en_tokenizer.eos_token
                 self.current_lang = "英文"
+                # 2025.3.3 SEG BEGIN
+                self.en_model.to(self.device)
+                print(f"EN model is loaded on {self.device}")
+                # SEG END
             except Exception as e:
                 print(f"加载英文模型失败: {str(e)}")
                 return False
@@ -56,7 +74,55 @@ class LLMPredictor:
                 raise ValueError("无法加载英文模型")
             return self.en_model, self.en_tokenizer
 
-    def predict_next_tokens(self, input_text, *, temperature=1.0, model_lang="中文", top_k=10):
+    def generate_next_token(self, input_text, model_lang = "中文", temperature = 1.0, top_k = 10):
+        # 1. Encode the input text
+        try:
+            active_model, active_tokenizer = self._get_model_and_tokenizer(model_lang)
+            input_ids = active_tokenizer.encode(input_text, return_tensors='pt').to(self.device)
+
+            with torch.no_grad():
+                outputs = active_model(input_ids)
+                logits = outputs.logits
+
+            # Get the output logits and transformed to probabilities
+            next_token_logits = logits[0, -1, :]
+            next_token_probs = F.softmax(next_token_logits, dim=-1)
+
+            # Apply temperature to alter relative weights
+            if temperature != 0:
+                next_token_probs = next_token_probs / temperature
+
+            topk_probs, topk_indices = torch.topk(next_token_probs, top_k)
+
+            chosen_idx = torch.multinomial(topk_probs, 1)
+
+            print(f"Top {top_k} next token predictions were generated!")
+            print(f"Top K index is: {topk_indices}")
+            print(f"The Chosen token is: {chosen_idx.item()}")
+
+            # Establish return results
+            results = []
+
+            for tid, prob in zip(topk_indices, topk_probs):
+                token = active_tokenizer.decode(tid.item())
+                results.append({
+                    'token': token,
+                    'probability': float(prob),
+                    'is_sampled': True if tid==topk_indices[chosen_idx.item()] else False
+                })
+
+
+            return {
+                'language': model_lang,
+                'input_text': input_text,
+                'predictions': results
+            }
+        
+        except Exception as e:
+            raise Exception(f"处理过程出现错误: {str(e)}.")
+
+    
+    def predict_next_token(self, input_text, *, temperature=1.0, model_lang="中文", top_k=10):
         """
         预测下一个token并使用Top-K随机采样
         

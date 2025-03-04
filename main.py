@@ -3,68 +3,8 @@ import torch
 import os
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-# # 确保有正确的缓存目录
-# cache_dir = os.path.expanduser("~/.cache/huggingface/")
-# os.makedirs(cache_dir, exist_ok=True)
 
-# try:
-#     # 使用 AutoTokenizer 和 AutoModel 来加载中文模型
-#     tokenizer = AutoTokenizer.from_pretrained(
-#         "uer/gpt2-chinese-cluecorpussmall",
-#         trust_remote_code=True,
-#         cache_dir=cache_dir
-#     )
-#     model = AutoModelForCausalLM.from_pretrained(
-#         "uer/gpt2-chinese-cluecorpussmall",
-#         trust_remote_code=True,
-#         cache_dir=cache_dir
-#     )
-# except Exception as e:
-#     print(f"加载中文模型失败: {str(e)}")
-#     print("尝试加载英文 GPT-2 模型作为备选...")
-#     tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
-#     model = GPT2LMHeadModel.from_pretrained('gpt2')
-
-
-# input_text = "今天的天气真是 "
-# # 编码输入文本
-# input_ids = tokenizer.encode(input_text, return_tensors='pt')
-
-# # 使用模型生成文本
-# with torch.no_grad():
-#     outputs = model(input_ids)
-#     logits = outputs.logits
-
-# # 获取最后一个位置的 logits
-# last_token_logits = logits[:, -1, :]
-
-# # 计算概率分布（经过 softmax）
-# probabilities = torch.softmax(last_token_logits, dim=-1)
-
-# K = 10  # 设定 K 值
-
-# # 获取概率最高的 K 个 tokens
-# topk_probs, topk_indices = torch.topk(probabilities, K)
-
-# # 将 token IDs 转换为可读的 tokens
-# topk_tokens = tokenizer.convert_ids_to_tokens(topk_indices[0])
-
-# # 输出候选 tokens 及其概率
-# for token, prob in zip(topk_tokens, topk_probs[0]):
-#     print(f"Token: {token}, 概率: {prob.item():.5f}")
-
-#     # 选择概率最高的 token 的 ID
-# next_token_id = topk_indices[0][0].unsqueeze(0)
-
-# # 更新输入 IDs
-# input_ids = torch.cat([input_ids, next_token_id.unsqueeze(0)], dim=1)
-
-# # 解码生成的新句子
-# generated_text = tokenizer.decode(input_ids[0], skip_special_tokens=True)
-# print("生成的句子:", generated_text)
-
-
-
+'''搭建前端界面'''
 import streamlit as st
 from model import LLMPredictor
 import time
@@ -172,10 +112,11 @@ def main():
     # 修改预测逻辑，添加温度参数
     def update_predictions():
         try:
-            result = st.session_state.predictor.predict_next_tokens(
+            result = st.session_state.predictor.generate_next_token(
                 input_text=st.session_state.generated_text,
                 temperature=st.session_state.temperature,
-                model_lang=st.session_state.model_lang
+                model_lang=st.session_state.model_lang,
+                top_k=5
             )
             
             if not result:
@@ -189,7 +130,7 @@ def main():
                 token = pred['token']
                 prob = pred['probability']
                 
-                cols = st.columns([2, 5, 3])
+                cols = st.columns([2, 6, 2])
                 with cols[0]:
                     st.write(f"Token: {token}")
                 with cols[1]:
@@ -205,7 +146,10 @@ def main():
                             st.rerun()
 
             if st.session_state.is_auto_mode and st.session_state.is_running:
-                best_token = result['predictions'][0]['token']
+                candidates = result['predictions']
+                print(candidates)
+                best_token = [item['token'] for item in candidates if item['is_sampled']][0]
+                # best_token = result['predictions'][0]['token']
                 st.session_state.generated_text += best_token
                 time.sleep(st.session_state.generation_interval)
                 st.rerun()
