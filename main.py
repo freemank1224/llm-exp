@@ -1,8 +1,9 @@
-# from transformers import GPT2Tokenizer, GPT2LMHeadModel, BertTokenizer
-# import torch
-# import os
-# from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import GPT2Tokenizer, GPT2LMHeadModel, BertTokenizer
+import torch
+import os
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
+'''搭建前端界面'''
 import streamlit as st
 from model import LLMPredictor
 import time
@@ -12,7 +13,7 @@ def main():
     if 'predictor' not in st.session_state:
         st.session_state.predictor = LLMPredictor()
 
-    st.title("下一个 Token 预测演示")
+    st.title("LLM 下一个 Token 预测演示")
 
     # 初始化其他 session state
     if 'generated_text' not in st.session_state:
