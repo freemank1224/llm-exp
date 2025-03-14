@@ -2,6 +2,7 @@ import streamlit as st
 from model import LLMPredictor
 import time
 
+# ...将原有 main.py 的内容完整复制到这里...
 def main():
     # 将模型实例存储在 session state 中
     if 'predictor' not in st.session_state:
@@ -122,14 +123,30 @@ def main():
         st.divider()
 
         # 词库长度显示
+        try:
+            if st.session_state.model_lang == "中文":
+                token_len = (st.session_state.predictor.zh_tokenizer.vocab_size 
+                           if st.session_state.predictor.zh_tokenizer is not None 
+                           else "模型未加载")
+            else:
+                token_len = (st.session_state.predictor.en_tokenizer.vocab_size 
+                           if st.session_state.predictor.en_tokenizer is not None 
+                           else "模型未加载")
+            
+            # 更新session state中的token_len
+            st.session_state.token_len = token_len
+        except Exception as e:
+            st.session_state.token_len = "无法获取词表大小"
+            st.error(f"获取词表大小时出错: {str(e)}")
+
         st.markdown("#### 词库的长度")  # Using markdown for black text
         st.text_area(
-            label="词库长度显示区域",  # 添加有意义的label
-            value=str(st.session_state.token_len),
+            "",  # Remove label since we're using markdown above
+            value=str(st.session_state.token_len),  # Ensure value is string
             disabled=True,
             height=100,
             key="vocab_size_area",
-            label_visibility="collapsed"  # 隐藏label但保持可访问性
+            label_visibility="collapsed",  # Hide empty label
         )
         # Apply custom CSS to increase text size
         st.markdown("""

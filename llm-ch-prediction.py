@@ -35,7 +35,7 @@ def get_probability_and_logit(input_text, next_token):
     last_logits = outputs.logits[:, -1, :]  
     token_id = tokenizer.convert_tokens_to_ids(next_token)  
     if token_id is None:  
-        return 0.0, float('-inf')  
+        return 0.0, float('-inf') 
     probability = softmax(last_logits, dim=-1)[0][token_id].item()  # 添加 dim 参数
     logit = last_logits[0][token_id].item()  
     return probability, logit

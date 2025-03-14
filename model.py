@@ -2,24 +2,32 @@ from transformers import GPT2Tokenizer, GPT2LMHeadModel, AutoTokenizer, AutoMode
 import torch
 import torch.nn.functional as F
 import os
+import warnings
+
+# 忽略特定的PyTorch警告
+warnings.filterwarnings('ignore', category=UserWarning, message='.*torch.classes.*')
 
 class LLMPredictor:
     def __init__(self):
         self.cache_dir = os.path.expanduser("~/.cache/huggingface/")
         os.makedirs(self.cache_dir, exist_ok=True)
+        
+        # 预初始化设备
+        if torch.backends.mps.is_available():
+            self.device = torch.device("mps")
+        elif torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        else:
+            self.device = torch.device("cpu")
+            
+        print(f"Using device: {self.device}")
+        
+        # 初始化其他属性
         self.zh_model = None
         self.zh_tokenizer = None
         self.en_model = None
         self.en_tokenizer = None
         self.current_lang = None
-
-        if torch.backends.mps.is_available():
-            self.device = "mps"
-        elif torch.cuda.is_available():
-            self.device = "cuda"
-        else:
-            self.device = "cpu"
-        # self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
     def _load_chinese_model(self):
         if self.zh_model is None:
