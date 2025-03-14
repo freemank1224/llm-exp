@@ -1,9 +1,3 @@
-from transformers import GPT2Tokenizer, GPT2LMHeadModel, BertTokenizer
-import torch
-import os
-from transformers import AutoTokenizer, AutoModelForCausalLM
-
-'''搭建前端界面'''
 import streamlit as st
 from model import LLMPredictor
 import time
@@ -13,7 +7,8 @@ def main():
     if 'predictor' not in st.session_state:
         st.session_state.predictor = LLMPredictor()
 
-    st.title("LLM 下一个 Token 预测演示")
+    st.title("下一个词元预测演示")
+    st.subheader("英文模型：GPT-2，中文模型：Qwen2-1.5B，Top-K采样")
 
     # 初始化其他 session state
     if 'generated_text' not in st.session_state:
@@ -31,6 +26,10 @@ def main():
         st.session_state.predicting = False
     if 'temperature' not in st.session_state:
         st.session_state.temperature = 1.0
+    if 'top_k' not in st.session_state:
+        st.session_state.top_k = 5
+    if 'token_len' not in st.session_state:
+        st.session_state.token_len = 0
     if 'model_lang' not in st.session_state:
         st.session_state.model_lang = "中文"
     if 'selected_token' not in st.session_state:
@@ -110,6 +109,53 @@ def main():
             help="较高的温度会产生更多样化的输出，较低的温度会产生更确定性的输出"
         )
 
+        st.session_state.top_k = st.slider(
+            "Top-K 采样",
+            min_value=1,
+            max_value=20,
+            value=st.session_state.top_k,
+            step=1,
+            help="在词表中选择排在最前的K个词"
+        )
+
+        # 分割线
+        st.divider()
+
+        # 词库长度显示
+        try:
+            if st.session_state.model_lang == "中文":
+                token_len = (st.session_state.predictor.zh_tokenizer.vocab_size 
+                           if st.session_state.predictor.zh_tokenizer is not None 
+                           else "模型未加载")
+            else:
+                token_len = (st.session_state.predictor.en_tokenizer.vocab_size 
+                           if st.session_state.predictor.en_tokenizer is not None 
+                           else "模型未加载")
+            
+            # 更新session state中的token_len
+            st.session_state.token_len = token_len
+        except Exception as e:
+            st.session_state.token_len = "无法获取词表大小"
+            st.error(f"获取词表大小时出错: {str(e)}")
+
+        st.markdown("#### 词库的长度")  # Using markdown for black text
+        st.text_area(
+            "",  # Remove label since we're using markdown above
+            value=str(st.session_state.token_len),  # Ensure value is string
+            disabled=True,
+            height=100,
+            key="vocab_size_area",
+            label_visibility="collapsed",  # Hide empty label
+        )
+        # Apply custom CSS to increase text size
+        st.markdown("""
+            <style>
+            div[data-testid="stTextArea"] textarea {
+                font-size: 1.2em;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
     # 文本显示区域，添加最大长度限制
     if len(st.session_state.generated_text) > 1000:  # 防止生成文本过长
         st.warning("文本已达到最大长度限制，请点击复位按钮开始新的生成")
@@ -123,7 +169,7 @@ def main():
                 input_text=st.session_state.generated_text,
                 temperature=st.session_state.temperature,
                 model_lang=st.session_state.model_lang,
-                top_k=5
+                top_k=st.session_state.top_k
             )
             
             if not result:

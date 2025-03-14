@@ -25,12 +25,12 @@ class LLMPredictor:
         if self.zh_model is None:
             try:
                 self.zh_tokenizer = AutoTokenizer.from_pretrained(
-                    "uer/gpt2-chinese-cluecorpussmall",
+                    "Qwen/Qwen2-1.5B",
                     trust_remote_code=True,
                     cache_dir=self.cache_dir
                 )
                 self.zh_model = AutoModelForCausalLM.from_pretrained(
-                    "uer/gpt2-chinese-cluecorpussmall",
+                    "Qwen/Qwen2-1.5B",
                     trust_remote_code=True,
                     cache_dir=self.cache_dir
                 )
@@ -47,18 +47,21 @@ class LLMPredictor:
     def _load_english_model(self):
         if self.en_model is None:
             try:
+                # 先加载tokenizer
                 self.en_tokenizer = GPT2Tokenizer.from_pretrained('gpt2', cache_dir=self.cache_dir)
-                self.en_model = GPT2LMHeadModel.from_pretrained('gpt2', cache_dir=self.cache_dir)
-                # 设置特殊token
                 if self.en_tokenizer.pad_token is None:
                     self.en_tokenizer.pad_token = self.en_tokenizer.eos_token
+                
+                # 再加载模型
+                self.en_model = GPT2LMHeadModel.from_pretrained('gpt2', cache_dir=self.cache_dir)
                 self.current_lang = "英文"
-                # 2025.3.3 SEG BEGIN
                 self.en_model.to(self.device)
                 print(f"EN model is loaded on {self.device}")
-                # SEG END
+                return True
             except Exception as e:
                 print(f"加载英文模型失败: {str(e)}")
+                self.en_tokenizer = None  # 确保在失败时设置为None
+                self.en_model = None
                 return False
         return True
 
@@ -73,7 +76,7 @@ class LLMPredictor:
                 raise ValueError("无法加载英文模型")
             return self.en_model, self.en_tokenizer
 
-    def generate_next_token(self, input_text, model_lang = "中文", temperature = 1.0, top_k = 5):
+    def generate_next_token(self, input_text, model_lang = "中文", temperature = 1.0, top_k = 8):
         # 1. Encode the input text
         try:
             active_model, active_tokenizer = self._get_model_and_tokenizer(model_lang)
