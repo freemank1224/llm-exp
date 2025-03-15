@@ -4,8 +4,9 @@ import torch.nn.functional as F
 import os
 import warnings
 
-# 忽略特定的PyTorch警告
+# 添加更多具体的警告过滤
 warnings.filterwarnings('ignore', category=UserWarning, message='.*torch.classes.*')
+warnings.filterwarnings('ignore', category=UserWarning, message='.*Trying to initialize.*')
 
 class LLMPredictor:
     def __init__(self):

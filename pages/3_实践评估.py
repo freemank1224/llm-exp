@@ -1,12 +1,16 @@
 import streamlit as st
 import json
+from score_manager import init_score_state, update_score, get_score_status
 
 def main():
+    # 初始化分数状态
+    init_score_state(st)
+
     # 注入CSS样式
     st.markdown("""
         <style>
         .gradient-title {
-            background: linear-gradient(140deg, #00ffbb 0%, #3d9dff 50%, #7f2aff 100%);
+            background: linear-gradient(120deg, #ffbe00 0%, #ff7c00 40%, #dd0000 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-size: 6em;  /* 调整为与原理图解页面一致 */
@@ -92,17 +96,25 @@ def main():
             if st.button("提交", key=f"submit_{i}"):
                 if q["options"].index(answer) == q["correct"]:
                     st.success("✅ 回答正确！")
-                    st.session_state.score += 1
+                    update_score(st, "实践评估", 1)
                 else:
                     st.error("❌ 回答错误。")
         st.markdown('</div>', unsafe_allow_html=True)
 
     with tab2:
         st.subheader("学习进度追踪")  # 添加小标题
-        st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-        st.markdown("### 学习进度")
-        st.progress(st.session_state.score / 2)  # 假设总分为2
-        st.metric("当前得分", f"{st.session_state.score}/2")
+        score_status = get_score_status(st)
+        
+        # 显示总体进度，添加除零保护
+        progress = (score_status['total'] / score_status['max']) if score_status['max'] > 0 else 0
+        st.progress(progress)
+        st.metric("总得分", f"{score_status['total']}/{score_status['max']}")
+        
+        # 显示各部分得分
+        st.markdown("### 各章节得分")
+        for section, data in score_status['sections'].items():
+            if data['max'] > 0:  # 只显示有分值的章节
+                st.metric(section, f"{data['score']}/{data['max']}")
         st.markdown('</div>', unsafe_allow_html=True)
 
     with tab3:

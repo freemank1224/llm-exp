@@ -1,16 +1,20 @@
 import streamlit as st
 import time
+from score_manager import init_score_state, update_score, get_score_status  # 添加 get_score_status 的导入
 
 def main():
     # 初始化 session state
     if 'current_step' not in st.session_state:
         st.session_state.current_step = 0
 
+    # 初始化分数状态
+    init_score_state(st)
+
     # 注入CSS样式
     st.markdown("""
         <style>
         .gradient-title {
-            background: linear-gradient(140deg, #00ffbb 0%, #3d9dff 50%, #7f2aff 100%);
+            background: linear-gradient(120deg, #ffbe00 0%, #ff7c00 40%, #dd0000 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-size: 6em;
@@ -61,7 +65,7 @@ def main():
         .typewriter-text {
             font-family: monospace;
             font-size: 1.5em;
-            color: #00ffbb;
+            color: #ff4b4b;
             position: relative;
             white-space: pre;
             display: inline-block;
@@ -167,13 +171,13 @@ def main():
             
             with st.expander("查看动态演示"):
                 demo_texts = [
-                    "人工智能将改变我们的生活的方方面面"
+                    "人工智能将改变我们生活的方方面面"
                 ]
                 
                 for i, text in enumerate(demo_texts):
                     st.markdown(f"""
                         <div class="typewriter-container">
-                            <div class="loop-container" style="--delay: {i * 10}">
+                            <div class="loop-container" style="--delay: {i * 2}">
                                 <div class="demo-text">
                                     <span class="typewriter-text start">{text}</span>
                                 </div>
@@ -189,12 +193,52 @@ def main():
         if st.session_state.current_step >= 1:
             st.markdown("""
                 <div class="fade-in">
-                <h2>2. 那么，你认为它给你的答案，是一个字一个字思考的呢，还是一次性全部想好，然后逐个字吐出来的呢？</h2>
+                <h2>2. 你认为它是如何工作的？</h2>
                 </div>
             """, unsafe_allow_html=True)
 
+            if not "score" in st.session_state:
+                st.session_state.score = 0
+                st.session_state.answers = {}
+
+            questions = [
+                {
+                    "question":"Deepseek这样工作：",
+                    "options":[
+                        "先准备好所有的答案内容，然后一字一词的显示出来",
+                        "一个词一个词的生成并显示出来"
+                    ],
+                    "correct": 1
+                }
+            ]
+
+            for i, q in enumerate(questions):
+                # st.write(f"问题 {i+1}: {q['question']}")
+                # st.radio("选择答案:", q["options"], key=f"q_{i}")
+                answer = st.radio("", q["options"], key=f"q_{i}")
+
+                if st.button("提交", key=f"submit_{i}"):
+                    if q["options"].index(answer) == q["correct"]:
+                        st.success("✅ 回答正确！")
+                        update_score(st, "原理图解", 1)  # 更新分数
+                    else:
+                        st.error("❌ 回答错误。")
+
+        # 显示当前章节得分
+        score_status = get_score_status(st)
+        st.sidebar.markdown(f"### 本节得分: {score_status['sections']['原理图解']['score']}/{score_status['sections']['原理图解']['max']}")
+
+        # 第三步内容
+        if st.session_state.current_step >= 2:
+            st.markdown(
+                """
+                <div class="fade-in">
+                <h2>3. 那么，我们呢？</h2>
+                </div>
+                """,unsafe_allow_html=True)
+
         # 下一步按钮
-        if st.session_state.current_step < 1:  # 最多显示两个主题
+        if st.session_state.current_step < 2:  # 最多显示两个主题
             if st.button("下一步 ▶", key="next_button"):
                 st.session_state.current_step += 1
                 st.rerun()

@@ -41,7 +41,7 @@ def main():
             font-size: 9rem;
             font-weight: 1000;
             text-align: center;
-            background: linear-gradient(140deg, #00ffbb 0%, #3d9dff 50%, #7f2aff 100%);
+            background: linear-gradient(120deg, #ffbe00 0%, #ff7c00 40%, #dd0000 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             opacity: 0;
@@ -99,7 +99,7 @@ def main():
             display: inline-block;
             width: 4px;
             height: 100px;
-            background: #00ffbb;
+            background: #ff7c00;
             margin-left: 10px;
             vertical-align: middle;
             animation: blink 1s step-end infinite;
@@ -122,7 +122,7 @@ def main():
                 </div>
             </div>
             <div class="footer">
-                张国煜「戴森老师」 | 演讲时间：""" + datetime.now().strftime('%Y-%m-%d') + """
+                张国煜「戴森老师」 |  演讲时间：""" + datetime.now().strftime('%Y-%m-%d') + """
             </div>
         </div>
     """, unsafe_allow_html=True)
