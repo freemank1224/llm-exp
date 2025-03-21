@@ -8,7 +8,7 @@ def main():
     if 'predictor' not in st.session_state:
         st.session_state.predictor = LLMPredictor()
 
-    st.title("下一个词元预测演示")
+    st.title("下一个「词元」预测演示")
     st.subheader("英文模型：GPT-2，中文模型：Qwen2-1.5B，Top-K采样")
 
     # 初始化其他 session state
