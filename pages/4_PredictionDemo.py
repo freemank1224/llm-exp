@@ -187,22 +187,32 @@ def main():
                 
                 # 创建一个带有背景色的列布局
                 col_style = "background-color: #90EE90;" if is_sampled else ""
-                cols = st.columns([2, 6, 2])
+                cols = st.columns([2, 6, 1, 1])
                 with cols[0]:
-                    if is_sampled:
-                        st.markdown(f"**:green[Token: {token}]** 🎯")
+                    if st.session_state.is_auto_mode:
+                        if is_sampled:
+                            st.markdown(f"**:green[Token: {token}]** 🎯")
+                        else:
+                            st.write(f"Token: {token}")
                     else:
                         st.write(f"Token: {token}")
+                
                 with cols[1]:
                     progress_container = st.container()
                     with progress_container:
                         progress_bar = st.progress(0)
                         progress_bar.progress(prob)
+
                 with cols[2]:
-                    if is_sampled:
-                        st.markdown(f"**:green[{prob:.5f}]**")
+                    if st.session_state.is_auto_mode:
+                        if is_sampled:
+                            st.markdown(f"**:green[{prob:.5f}]**")
+                        else:
+                            st.write(f"{prob:.5f}")
                     else:
                         st.write(f"{prob:.5f}")
+                
+                with cols[3]:
                     if not st.session_state.is_auto_mode:
                         if st.button("选择", key=f"use_{token}", help=f"点击将'{token}'添加到文本中"):
                             st.session_state.generated_text += token

@@ -214,8 +214,9 @@ def main():
 
     #st.title("语言模型原理图解")
     st.markdown('<h1 class="gradient-title">大语言模型是怎么工作的？</h1>', unsafe_allow_html=True)
+    st.markdown("")
     # st.markdown('<p style="text-align: center; font-size: 1.5em; color: #666;">构思一个场景，然后一个字一个字的写在本子上</p>', unsafe_allow_html=True)    
-    tabs = st.tabs(["你是怎么写作文的", "LLM的工作方式", "什么是「词元」"])
+    tabs = st.tabs(["你是怎么写作文的", "大语言模型如何「写作文」", "什么是「词元」"])
     
     with tabs[1]:
         # 第一步内容
@@ -340,7 +341,7 @@ def main():
     
     with tabs[2]:
         st.markdown("""
-        ## LLM生成文本的单位是「词元」
+        ## LLM生成文本的单位是：「词元」
         了解大语言模型如何将文本拆分为词元(Token)
         """)
         

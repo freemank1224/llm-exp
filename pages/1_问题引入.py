@@ -111,7 +111,7 @@ def main():
         with col_tab1[0]:
             st.markdown("""
                 <div class="fade_in">
-                    <h3>你用过Deepseek吗？</h3>
+                    <h3>你知道Deepseek吗？</h3>
                 </div>
             """, unsafe_allow_html=True)
             
