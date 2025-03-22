@@ -4,12 +4,32 @@ import time
 
 # ...将原有 main.py 的内容完整复制到这里...
 def main():
+    st.markdown("""
+    <style>
+    .gradient-title {
+        background: linear-gradient(120deg, #ffbe00 0%, #ff7c00 40%, #dd0000 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 7em;
+        font-weight: 1000;
+        text-align: center;
+        padding: 20px 0;
+        margin-bottom: 30px;
+    }
+    .tab-content {
+        padding: 20px;
+        border-radius: 5px;
+        min-height: 200px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     # 将模型实例存储在 session state 中
     if 'predictor' not in st.session_state:
         st.session_state.predictor = LLMPredictor()
 
-    st.title("下一个「词元」预测演示")
-    st.subheader("英文模型：GPT-2，中文模型：Qwen2-1.5B，Top-K采样")
+    st.markdown('<h1 class="gradient-title">游戏时间：下一个「词元」预测</h1>', unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center;'>英文模型：GPT-2，中文模型：Qwen2-1.5B，Top-K采样</h3>", unsafe_allow_html=True)
 
     # 初始化其他 session state
     if 'generated_text' not in st.session_state:
