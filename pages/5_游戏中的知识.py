@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import numpy as np
 from score_manager import init_score_state, update_score, get_score_status
-import random
+import random, time
 
 def create_ball_box(balls_data, color_map):
     # 创建物理引擎模拟的小球箱子
@@ -39,18 +39,91 @@ def create_ball_box(balls_data, color_map):
     )
     return fig
 
-def sampling_simulation(balls_data, num_samples):
-    results = []
+def sample_one_ball(balls_data):
+    """单次抽样一个球"""
     total_balls = sum(balls_data.values())
-    for _ in range(num_samples):
-        rand_num = random.random() * total_balls
-        curr_sum = 0
-        for color, count in balls_data.items():
-            curr_sum += count
-            if rand_num <= curr_sum:
-                results.append(color)
-                break
+    rand_num = random.random() * total_balls
+    curr_sum = 0
+    for color, count in balls_data.items():
+        curr_sum += count
+        if rand_num <= curr_sum:
+            return color
+    return list(balls_data.keys())[0]  # 保险起见，返回第一个颜色
+
+def sampling_simulation(balls_data, n_times):
+    """连续抽取n次，返回所有结果"""
+    results = []
+    for _ in range(n_times):
+        results.append(sample_one_ball(balls_data))
     return results
+
+def adjust_balls(balls_data, changed_color, new_value):
+    """自动调节球的数量，保持总数为100"""
+    # 颜色优先级（从最后调节到最先调节）
+    priority = ["红球 🔴", "蓝球 🔵", "绿球 🟢", "黄球 🟡", "紫球 🟣"]
+    
+    # 计算当前总数
+    total = sum(balls_data.values())
+    diff = total - 100
+    
+    # 如果需要调节
+    if diff != 0:
+        # 从优先级最低的球开始调节
+        for color in reversed(priority):
+            if color == changed_color:
+                continue
+            
+            current = balls_data[color]
+            if diff > 0:  # 需要减少球数
+                # 计算可以减少的数量（保留至少1个球）
+                can_reduce = max(0, current - 1)
+                reduce = min(can_reduce, diff)
+                balls_data[color] -= reduce
+                diff -= reduce
+            else:  # 需要增加球数
+                balls_data[color] -= diff  # diff是负数，所以用减法
+                diff = 0
+            
+            if diff == 0:
+                break
+    
+    return balls_data
+
+def display_results(container, total_sampling_results, colors):
+    """显示当前抽样结果的柱状图"""
+    total_samples = sum(total_sampling_results.values())
+    if total_samples > 0:
+        fig = go.Figure()
+        for ball_name, count in total_sampling_results.items():
+            percentage = (count / total_samples * 100)
+            fig.add_trace(go.Bar(
+                y=[ball_name],
+                x=[count],
+                orientation='h',
+                marker_color=colors[ball_name],
+                width=0.6,
+                text=f"{count}次 ({percentage:.1f}%)",
+                textposition='inside',
+                insidetextanchor='start',
+                textfont=dict(color='black', size=14)
+            ))
+        
+        fig.update_layout(
+            height=300,
+            showlegend=False,
+            xaxis_title="抽样次数",
+            yaxis=dict(
+                autorange="reversed",
+                side='left'
+            ),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            margin=dict(l=150, r=20, t=20, b=40),
+            bargap=0.2,
+            uniformtext=dict(mode='hide', minsize=12)
+        )
+        
+        container.plotly_chart(fig, use_container_width=False)
 
 def main():
     # 初始化分数状态
@@ -269,63 +342,89 @@ def main():
                 with col1:
                     value = st.slider(
                         f"{ball_name}数量",
-                        0, 100,
+                        1, 100,  # 最小值改为1
                         st.session_state.balls_data[ball_name],
                         key=f"slider_{ball_name}",
                         help="拖动滑块设置小球数量",
                         args=(color_code,)
                     )
-                    st.session_state.balls_data[ball_name] = value
+                    
+                    # 如果值发生变化，进行自动调节并重置抽样结果
+                    if value != st.session_state.balls_data[ball_name]:
+                        st.session_state.balls_data[ball_name] = value
+                        st.session_state.balls_data = adjust_balls(
+                            st.session_state.balls_data,
+                            ball_name,
+                            value
+                        )
+                        # 重置抽样结果
+                        st.session_state.total_sampling_results = {color: 0 for color in colors.keys()}
+                        # 强制更新页面
+                        st.rerun()
+                        
                 with col2:
-                    st.markdown(f"**{value}个 ({value}%)**")
-                total_balls += value
+                    current_value = st.session_state.balls_data[ball_name]
+                    st.markdown(f"**{current_value}个 ({current_value}%)**")
+                total_balls += st.session_state.balls_data[ball_name]
             
-            # 设置抽样次数
-            num_samples = st.number_input("设置抽样次数", min_value=1, max_value=1000, value=100)
-            
-            # 开始抽样按钮
-            if st.button("开始抽样"):
-                if total_balls == 100:
-                    with st.spinner("抽样中..."):
-                        results = sampling_simulation(st.session_state.balls_data, num_samples)
-                        # 统计结果
-                        st.session_state.sampling_results = {
-                            color: results.count(color) for color in colors.keys()
-                        }
-                else:
-                    st.error("总球数必须为100个！当前总数：" + str(total_balls))
-            
-            # 显示抽样结果
-            if st.session_state.sampling_results:
-                st.subheader("抽样结果")
-                fig = go.Figure()
-                
-                for ball_name, count in st.session_state.sampling_results.items():
-                    fig.add_trace(go.Bar(
-                        name=ball_name,
-                        x=[ball_name],
-                        y=[count],
-                        marker_color=colors[ball_name]
-                    ))
-                
-                fig.update_layout(
-                    height=300,
-                    showlegend=False,
-                    yaxis_title="抽样次数",
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    paper_bgcolor='rgba(0,0,0,0)'
-                )
-                
-                st.plotly_chart(fig, use_container_width=True)
-        
         with right_col:
+            # 球箱预览部分保持不变
             st.subheader("球箱预览")
             if total_balls == 100:
                 fig = create_ball_box(st.session_state.balls_data, colors)
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, use_container_width=True, key="box_preview")
             else:
                 st.warning("请确保总球数为100个")
-    
+            
+            # 在右侧创建柱状图容器
+            chart_container = st.empty()
+            st.markdown("---")
+            if 'total_sampling_results' not in st.session_state:
+                st.session_state.total_sampling_results = {color: 0 for color in colors.keys()}
+            display_results(chart_container, st.session_state.total_sampling_results, colors)
+
+        with left_col:
+            st.markdown("---")
+            # 抽样控制部分
+            st.number_input(
+                "设置每次点击抽取的球数",
+                min_value=1,
+                value=10,
+                key="batch_size"
+            )
+            
+            # 将两个按钮放在同一行
+            button_cols = st.columns(2)
+            with button_cols[0]:
+                sample_button = st.button("连续抽取", key="sample_button", use_container_width=True)
+            with button_cols[1]:
+                reset_button = st.button("重置抽样结果", key="reset_button", use_container_width=True)
+            
+            # 处理按钮点击事件
+            if reset_button:
+                st.session_state.total_sampling_results = {color: 0 for color in colors.keys()}
+                st.rerun()
+                
+            if total_balls == 100 and sample_button:
+                batch_size = st.session_state.batch_size
+                # 执行抽样并实时更新结果
+                for _ in range(batch_size):
+                    result = sample_one_ball(st.session_state.balls_data)
+                    st.session_state.total_sampling_results[result] += 1
+                    display_results(chart_container, st.session_state.total_sampling_results, colors)
+                    time.sleep(0.05)
+                
+                # 显示本次抽样结果统计
+                st.write("本次抽样结果：")
+                current_results = {color: 0 for color in colors.keys()}
+                for _ in range(batch_size):
+                    color = sample_one_ball(st.session_state.balls_data)
+                    current_results[color] += 1
+                
+                for color, count in current_results.items():
+                    if count > 0:
+                        st.write(f"{color}: {count}个")
+
     with tabs[1]:
         st.header("总结")
         # 这里添加总结的内容
