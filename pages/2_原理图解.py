@@ -8,6 +8,12 @@ def main():
         st.session_state.current_step = 0
     if 'block_index' not in st.session_state:
         st.session_state.block_index = 0
+    if 'token_index' not in st.session_state:
+        st.session_state.token_index = 0
+    if 'completed_tokens' not in st.session_state:
+        st.session_state.completed_tokens = []
+    if 'input_key' not in st.session_state:
+        st.session_state.input_key = 0  # 用于重置输入框
 
     # 初始化分数状态
     init_score_state(st)
@@ -193,6 +199,57 @@ def main():
             padding: 10px 20px;
             border-radius: 5px;
         }
+
+        /* 添加新的渐变文本样式 */
+        .gradient-text {
+            font-size: 2.5em;  /* 统一字体大小 */
+            background: linear-gradient(120deg, #ffbe00 0%, #ff7c00 40%, #dd0000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            display: inline;
+        }
+        
+        /* 修改词元样式 */
+        .token-normal {
+            font-size: 2.5em;  /* 统一字体大小 */
+            font-weight: bold;
+            color: #666;
+            display: inline;
+        }
+        
+        /* 基础句子样式 */
+        .base-text {
+            font-size: 2.5em;  /* 调整为和词元一致的大小 */
+            font-weight: bold;
+            display: inline;
+        }
+                
+        /* 词元选项容器 */
+        .token-options {
+            font-size: 1.5em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;  /* 增加内边距使色块更大 */
+            border-radius: 8px;  /* 增加圆角 */
+            margin: 5px 0;      /* 增加外边距 */
+            transition: all 0.3s ease;  /* 添加过渡效果 */
+        }
+        
+        .token-options:hover {
+            transform: scale(1.02);  /* 添加悬停效果 */
+        }
+        
+        /* 增大句子显示 */
+        .large-sentence {
+            line-height: 1.5;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -216,9 +273,98 @@ def main():
     st.markdown('<h1 class="gradient-title">大语言模型是怎么工作的？</h1>', unsafe_allow_html=True)
     st.markdown("")
     # st.markdown('<p style="text-align: center; font-size: 1.5em; color: #666;">构思一个场景，然后一个字一个字的写在本子上</p>', unsafe_allow_html=True)    
-    tabs = st.tabs(["你是怎么写作文的", "大语言模型如何「写作文」", "什么是「词元」"])
+    tabs = st.tabs(["「写话」的技巧", "你是怎么写作文的", "大语言模型如何「写作文」", "什么是「词元」"])
     
-    with tabs[1]:
+    with tabs[0]:
+        st.markdown("""
+                <div class="fade-in">
+                <h2>老师教我们怎么「写话」？</h2>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        # 基础句子
+        base_sentence = "今天星期六，天气"
+        
+        # 显示当前句子状态，只对最新词元使用渐变色
+        current_text = f'<span class="base-text">{base_sentence}</span>'
+        for i, token in enumerate(st.session_state.completed_tokens):
+            if i == len(st.session_state.completed_tokens) - 1 and st.session_state.token_index < 3:
+                current_text += f'<span class="gradient-text">{token}</span> '
+            else:
+                current_text += f'<span class="token-normal">{token}</span> '
+        
+        st.markdown(f'<div class="large-sentence">{current_text}____</div>', unsafe_allow_html=True)
+
+        col_l, _, col_r = st.columns([0.55, 0.05, 0.4])
+        with col_l:
+            # 如果还没有完成所有词元
+            if st.session_state.token_index < 3:
+                st.markdown(f"### 第 {st.session_state.token_index + 1} 个词元")
+                
+                # 初始化当前token位置的选项列表（如果不存在）
+                if 'token_options' not in st.session_state:
+                    st.session_state.token_options = [[] for _ in range(3)]
+                
+                # 添加新的备选词元
+                new_option = st.text_input(
+                    "输入新的备选词元:",
+                    key=f"new_option_{st.session_state.token_index}_{st.session_state.input_key}"
+                )
+                if st.button("添加", key=f"add_{st.session_state.token_index}", use_container_width=True) and new_option:
+                    current_options = st.session_state.token_options[st.session_state.token_index]
+                    if new_option not in current_options:
+                        current_options.append(new_option)
+                        st.session_state.token_options[st.session_state.token_index] = current_options
+                        st.session_state.input_key += 1
+                        st.rerun()
+
+        with col_r:
+            # 显示当前位置的所有备选词元
+            st.markdown("### 可选词元:")
+            
+            # 定义一组配色方案
+            colors = [
+                "rgba(255, 99, 132, 0.2)",  # 红色
+                "rgba(54, 162, 235, 0.2)",   # 蓝色
+                "rgba(255, 206, 86, 0.2)",   # 黄色
+                "rgba(75, 192, 192, 0.2)",   # 青色
+                "rgba(153, 102, 255, 0.2)"   # 紫色
+            ]
+
+            if st.session_state.token_index < 5:
+                st.markdown('<div class="token-options-container">', unsafe_allow_html=True)
+                
+                for i, option in enumerate(st.session_state.token_options[st.session_state.token_index]):
+                    color = colors[i % len(colors)]
+                    col1, col2 = st.columns([0.7, 0.3])
+                    
+                    with col1:
+                        st.markdown(
+                            f'<div class="token-options" style="background-color: {color};">{option}</div>',
+                            unsafe_allow_html=True
+                        )
+                    with col2:
+                        if st.button(
+                            "选择",
+                            key=f"option_{st.session_state.token_index}_{i}",
+                            use_container_width=True,
+                            type="primary"
+                        ):
+                            st.session_state.completed_tokens.append(option)
+                            st.session_state.token_index += 1
+                            st.rerun()
+                
+                st.markdown('</div>', unsafe_allow_html=True)
+            else:
+                st.success("✨ 句子已完成!")
+                if st.button("重新开始"):
+                    st.session_state.token_index = 0
+                    st.session_state.completed_tokens = []
+                    st.session_state.token_options = [[] for _ in range(3)]
+                    st.session_state.input_key = 0
+                    st.rerun()
+
+    with tabs[2]:
         # 第一步内容
         if st.session_state.current_step >= 0:
             st.markdown("""
@@ -300,7 +446,7 @@ def main():
                 st.session_state.current_step += 1
                 st.rerun()
         
-    with tabs[0]:
+    with tabs[1]:
         col_tab = st.columns([0.4, 0.05, 0.55])
 
         with col_tab[2]:
@@ -339,7 +485,7 @@ def main():
                 st.session_state.block_index += 1
                 st.rerun()
     
-    with tabs[2]:
+    with tabs[3]:
         st.markdown("""
         ## LLM生成文本的单位是：「词元」
         了解大语言模型如何将文本拆分为词元(Token)

@@ -129,7 +129,12 @@ def main():
     # 初始化分数状态
     init_score_state(st)
 
-    # 注入CSS样式
+    # 确保初始化本节分数
+    score_status = get_score_status(st)
+    if "游戏中的知识" not in st.session_state.section_scores:
+        update_score(st, "游戏中的知识", 0)  # 初始化分数为0
+
+    # 注入CSS和JavaScript
     st.markdown("""
         <style>
         .gradient-title {
@@ -304,18 +309,58 @@ def main():
             padding: 10px 20px;
             border-radius: 5px;
         }
+
+        /* 烟花动画样式 */
+        .firework {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: explode 1s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(20);
+                opacity: 0;
+            }
+        }
         </style>
+
+        <script>
+        function createFirework() {
+            const colors = ['#FF4B4B', '#1E90FF', '#32CD32', '#FFD700', '#9370DB'];
+            for (let i = 0; i < 10; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                firework.style.left = Math.random() * 100 + '%';
+                firework.style.top = Math.random() * 100 + '%';
+                document.body.appendChild(firework);
+                setTimeout(() => firework.remove(), 1000);
+            }
+        }
+        </script>
     """, unsafe_allow_html=True)
 
     st.markdown('<h1 class="gradient-title">游戏中的知识</h1>', unsafe_allow_html=True)
-    
-    tabs = st.tabs(["概率抽样", "总结"])
+    st.markdown("")
+
+    tabs = st.tabs(["「摸小球」游戏：概率抽样", "游戏总结"])
     
     with tabs[0]:
-        st.header("概率抽样")
+        # st.header("概率抽样")
         
         # 创建左右分栏
-        left_col, right_col = st.columns([6, 4])
+        left_col, _, right_col = st.columns([5.5, 0.5, 4])
         
         with left_col:
             st.subheader("设置参数")
@@ -338,7 +383,7 @@ def main():
             # 滑动条控制小球数量
             total_balls = 0
             for ball_name, color_code in colors.items():
-                col1, col2 = st.columns([7, 3])
+                col1, col2 = st.columns([9, 1])
                 with col1:
                     value = st.slider(
                         f"{ball_name}数量",
@@ -375,10 +420,11 @@ def main():
                 st.plotly_chart(fig, use_container_width=True, key="box_preview")
             else:
                 st.warning("请确保总球数为100个")
-            
+
+            st.divider()
             # 在右侧创建柱状图容器
             chart_container = st.empty()
-            st.markdown("---")
+            
             if 'total_sampling_results' not in st.session_state:
                 st.session_state.total_sampling_results = {color: 0 for color in colors.keys()}
             display_results(chart_container, st.session_state.total_sampling_results, colors)
@@ -413,6 +459,7 @@ def main():
                     st.session_state.total_sampling_results[result] += 1
                     display_results(chart_container, st.session_state.total_sampling_results, colors)
                     time.sleep(0.05)
+                update_score(st, "游戏中的知识", 1)  # 记录操作得分
                 
                 # 显示本次抽样结果统计
                 st.write("本次抽样结果：")
@@ -426,7 +473,48 @@ def main():
                         st.write(f"{color}: {count}个")
 
     with tabs[1]:
-        st.header("总结")
+        st.header("思考两个问题")
+
+        questions = [
+            {
+                "question": "数量少的小球会被抽到吗？",
+                "options": [
+                    "😊如果抽取的次数足够多，那么即便数量很少的小球也会被抽到",
+                    "😭它永远都不会被抽到"
+                ],
+                "correct": 0
+            },
+            {
+                "question": "某个小球对应的概率非常大，说明：",
+                "options": [
+                    "如果抽取一次，这个小球一定会被抽到",
+                    "这个小球会被抽到的可能性更大"
+                ],
+                "correct": 1
+            }
+        ]
+
+        for i, q in enumerate(questions):
+            st.subheader(f"问题 {i+1}")
+            st.write(q["question"])
+            answer = st.radio("选择答案:", q["options"], key=f"q_{i}")
+            
+            if st.button("提交", key=f"submit_{i}"):
+                if q["options"].index(answer) == q["correct"]:
+                    st.success("✅ 回答正确！")
+                    update_score(st, "游戏中的知识", 1)  # 每道题2分
+                    # 触发烟花效果
+                    st.markdown(
+                        f"""<script>createFirework();</script>""", 
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.error("❌ 回答错误。")
+        
+        # 显示当前章节得分（移到最外层）
+        st.sidebar.markdown(f"### 本节得分: {st.session_state.section_scores['游戏中的知识']['score']}/5")
+
+        # st.markdown('</div>', unsafe_allow_html=True)
         # 这里添加总结的内容
 
 if __name__ == "__main__":

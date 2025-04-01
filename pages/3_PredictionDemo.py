@@ -197,7 +197,7 @@ def main():
                 st.error("预测失败，请检查模型加载状态")
                 return
 
-            st.subheader("候选 Tokens 及其概率：")
+            st.subheader("候选「词元」及其概率：")
             
             # 显示预测结果
             for pred in result['predictions']:
@@ -226,11 +226,11 @@ def main():
                 with cols[2]:
                     if st.session_state.is_auto_mode:
                         if is_sampled:
-                            st.markdown(f"**:green[{prob:.5f}]**")
+                            st.markdown(f"**:green[{100 * prob:.2f}%]**")
                         else:
-                            st.write(f"{prob:.5f}")
+                            st.write(f"{100 * prob:.2f}%")
                     else:
-                        st.write(f"{prob:.5f}")
+                        st.write(f"{100 * prob:.2f}%")
                 
                 with cols[3]:
                     if not st.session_state.is_auto_mode:
@@ -245,7 +245,7 @@ def main():
                 st.session_state.generated_text += selected_token
                 
                 # 添加选中提示
-                st.success(f"已选择Token: {selected_token}")
+                st.success(f"已选择「词元」: {selected_token}")
                 
                 time.sleep(st.session_state.generation_interval)
                 st.rerun()

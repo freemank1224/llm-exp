@@ -7,7 +7,8 @@ def init_score_state(st):
     if "section_scores" not in st.session_state:
         st.session_state.section_scores = {
             "原理图解": {"score": 0, "max": 1},  # 1分
-            "实践评估": {"score": 0, "max": 2}   # 2分
+            "实践评估": {"score": 0, "max": 2},  # 2分
+            "游戏中的知识": {"score": 0, "max": 5}  # 总分：抽样操作1分 + 两道题各2分
         }
 
 def update_score(st, section, points):

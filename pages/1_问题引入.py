@@ -103,7 +103,7 @@ def main():
     st.markdown("")
 
     # 创建标签页
-    tab1, tab2, tab3 = st.tabs(["你用过Deepseek吗？", "大语言模型因何得名？", "词元是什么？"])
+    tab1, tab2 = st.tabs(["你用过Deepseek吗？", "大语言模型因何得名？"])
 
     # 第一个标签页内容
     with tab1:
@@ -162,10 +162,10 @@ def main():
 
             # 更新数据
             models = ["ChatGPT\n(1750亿)", "GPT-4\n(2000亿)", "Claude 3 Sonnet\n(1750亿)", 
-                    "LLaMA 2\n(700亿)", "Gemini\n(7500亿)", "DeepSeek-V3\n(6710亿)"]
-            x = [2022, 2023, 2023, 2023, 2023, 2024]  # 年份
-            y = [1, 0.6, 1.0, 1.4, 1.8, 1.2]  # 垂直位置
-            sizes = [1750, 2000, 1750, 700, 7500, 6710]  # 参数规模（亿）
+                    "LLaMA 2\n(700亿)", "DeepSeek-V3\n(6710亿)"]
+            x = [2022, 2023, 2023, 2023, 2024]  # 年份
+            y = [1, 0.6, 1.0, 1.4, 1.2]  # 垂直位置
+            sizes = [1750, 2000, 1750, 700, 6710]  # 参数规模（亿）
             
             # 创建图表
             fig, ax = plt.subplots(figsize=(15, 8))
@@ -178,7 +178,7 @@ def main():
             sizes_scaled = [s ** 1.15 for s in sizes]  # 调整指数以获得更好的视觉效果
             scatter = ax.scatter(x, y, s=sizes_scaled, 
                             c=['#FF9999', '#66B2FF', '#99FF99', 
-                                '#FFCC99', '#FF99CC', '#99CCFF'],  # 修正颜色数组长度
+                                '#FFCC99', '#99CCFF'],  # 修正颜色数组长度
                             alpha=0.6)
             
             # 添加标签，直接在圆形中心显示
@@ -251,12 +251,12 @@ def main():
 
 
     # 第三个标签页内容
-    with tab3:
-        st.markdown("""
-            <div style='text-align: center; color: #ff7c00; font-size: 2em; margin: 0 0 30px 0; font-weight: 1000'>
-                大语言模型因何得名？
-            </div>
-        """, unsafe_allow_html=True)
+    # with tab3:
+    #     st.markdown("""
+    #         <div style='text-align: center; color: #ff7c00; font-size: 2em; margin: 0 0 30px 0; font-weight: 1000'>
+    #             大语言模型因何得名？
+    #         </div>
+    #     """, unsafe_allow_html=True)
 
 
         
