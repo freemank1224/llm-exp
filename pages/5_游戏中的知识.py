@@ -129,11 +129,6 @@ def main():
     # 初始化分数状态
     init_score_state(st)
 
-    # 确保初始化本节分数
-    score_status = get_score_status(st)
-    if "游戏中的知识" not in st.session_state.section_scores:
-        update_score(st, "游戏中的知识", 0)  # 初始化分数为0
-
     # 注入CSS和JavaScript
     st.markdown("""
         <style>
@@ -511,10 +506,10 @@ def main():
                 else:
                     st.error("❌ 回答错误。")
         
-        # 显示当前章节得分（移到最外层）
-        st.sidebar.markdown(f"### 本节得分: {st.session_state.section_scores['游戏中的知识']['score']}/5")
+        # 修改显示得分的代码，使用正确的变量名
+        score_status = get_score_status(st)
+        st.sidebar.markdown(f"### 本节得分: {score_status['sections']['游戏中的知识']['score']}/5")
 
-        # st.markdown('</div>', unsafe_allow_html=True)
         # 这里添加总结的内容
 
 if __name__ == "__main__":
