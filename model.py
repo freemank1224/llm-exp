@@ -3,10 +3,17 @@ import torch
 import torch.nn.functional as F
 import os
 import warnings
+import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # 添加更多具体的警告过滤
 warnings.filterwarnings('ignore', category=UserWarning, message='.*torch.classes.*')
 warnings.filterwarnings('ignore', category=UserWarning, message='.*Trying to initialize.*')
+
+# 禁用 SSL 警告
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+os.environ['CURL_CA_BUNDLE'] = ''
 
 class LLMPredictor:
     def __init__(self):
@@ -33,6 +40,7 @@ class LLMPredictor:
     def _load_chinese_model(self):
         if self.zh_model is None:
             try:
+                # 禁用SSL验证
                 self.zh_tokenizer = AutoTokenizer.from_pretrained(
                     "Qwen/Qwen2-1.5B",
                     trust_remote_code=True,
@@ -56,13 +64,19 @@ class LLMPredictor:
     def _load_english_model(self):
         if self.en_model is None:
             try:
-                # 先加载tokenizer
-                self.en_tokenizer = GPT2Tokenizer.from_pretrained('gpt2', cache_dir=self.cache_dir)
+                # 禁用SSL验证
+                self.en_tokenizer = GPT2Tokenizer.from_pretrained(
+                    'gpt2', 
+                    cache_dir=self.cache_dir
+                )
                 if self.en_tokenizer.pad_token is None:
                     self.en_tokenizer.pad_token = self.en_tokenizer.eos_token
                 
                 # 再加载模型
-                self.en_model = GPT2LMHeadModel.from_pretrained('gpt2', cache_dir=self.cache_dir)
+                self.en_model = GPT2LMHeadModel.from_pretrained(
+                    'gpt2', 
+                    cache_dir=self.cache_dir
+                )
                 self.current_lang = "英文"
                 self.en_model.to(self.device)
                 print(f"EN model is loaded on {self.device}")
