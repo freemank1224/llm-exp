@@ -250,6 +250,34 @@ def main():
             margin: 30px 0;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
+        .token-container {
+            margin: 30px 0;
+            line-height: 3.5;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .token-item {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 8px;
+            opacity: 0;
+            transform: translateY(20px);
+            font-size: 1.8em;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        @keyframes tokenAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -407,8 +435,7 @@ def main():
                 </div>
             """, unsafe_allow_html=True)
 
-            if not "score" in st.session_state:
-                st.session_state.score = 0
+            if "answers" not in st.session_state:
                 st.session_state.answers = {}
 
             questions = [
@@ -423,14 +450,21 @@ def main():
             ]
 
             for i, q in enumerate(questions):
-                # st.write(f"问题 {i+1}: {q['question']}")
-                # st.radio("选择答案:", q["options"], key=f"q_{i}")
+                # 检查这个问题是否已经回答正确
+                question_key = f"q_{i}_correct"
+                if question_key not in st.session_state:
+                    st.session_state[question_key] = False
+
                 answer = st.radio("", q["options"], key=f"q_{i}")
 
                 if st.button("提交", key=f"submit_{i}"):
-                    if q["options"].index(answer) == q["correct"]:
+                    is_correct = q["options"].index(answer) == q["correct"]
+                    if is_correct and not st.session_state[question_key]:
                         st.success("✅ 回答正确！")
-                        update_score(st, "原理图解", 1)  # 更新分数
+                        st.session_state[question_key] = True
+                        update_score(st, "原理图解", 1)  # 只在首次回答正确时更新分数
+                    elif is_correct and st.session_state[question_key]:
+                        st.success("✅ 回答正确！(已经获得过分数)")
                     else:
                         st.error("❌ 回答错误。")
 
@@ -493,10 +527,9 @@ def main():
     
     with tabs[3]:
         st.markdown("""
-        ## LLM生成文本的单位是：「词元」
-        了解大语言模型如何将文本拆分为词元(Token)
+        ## 「词元」是准确表达意思最小的有意义的单位！
         """)
-        
+
         # 初始化分词状态
         if 'predictor' not in st.session_state:
             from model import LLMPredictor
@@ -505,41 +538,20 @@ def main():
         if 'tokenized' not in st.session_state:
             st.session_state.tokenized = False
 
-        # 示例文本
-        sample_texts = {
-            "中文": "今天天气真不错，我们一起去春游吧！",
-            "英文": "The quick brown fox jumps over the lazy dog."
-        }
+        tab3_l, _, tab3_r = st.columns([0.45, 0.1, 0.45])
+        with tab3_l:
+            st.subheader("✅「今天」：拆开都不能表示原来的意思")
+            st.markdown("- **今**：可能有「今晚」、「今年」等意思")
+            st.markdown("- **天**：可能有「天气」、「天空」等意思")
 
-        selected_lang = st.radio("选择语言", ["中文", "英文"], key="token_lang")
-        user_text = st.text_input("输入要分析的文本", value=sample_texts[selected_lang])
-
-        # 添加新的 CSS 样式
-        st.markdown("""
-            <style>
-            .token-container {
-                margin: 20px 0;
-                line-height: 2.5;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 8px;
-                align-items: center;
+        with tab3_r:
+            # 示例文本
+            sample_texts = {
+                "中文": "今天天气真不错，我们一起去春游吧！",
+                "英文": "The quick brown fox jumps over the lazy dog."
             }
-            .token-item {
-                display: inline-block;
-                padding: 4px 8px;
-                border-radius: 4px;
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            @keyframes tokenAppear {
-                to {
-                    opacity: 1;w
-                    transform: translateY(0);
-                }
-            }
-            </style>
-        """, unsafe_allow_html=True)
+            selected_lang = st.radio("选择语言", ["中文", "英文"], key="token_lang")
+            user_text = st.text_input("输入要分析的文本", value=sample_texts[selected_lang])
 
         if st.button("开始分词分析"):
             try:
@@ -550,16 +562,16 @@ def main():
                 encoded = tokenizer.encode(user_text)
                 tokens = [tokenizer.decode([id]).strip() for id in encoded]
                 
-                # 使用不同的颜色显示tokens
+                # 使用不同的颜色显示tokens，增加颜色透明度
                 colors = [
-                    'rgba(255, 99, 132, 0.3)',  # 红色
-                    'rgba(54, 162, 235, 0.3)',   # 蓝色
-                    'rgba(255, 206, 86, 0.3)',   # 黄色
-                    'rgba(75, 192, 192, 0.3)',   # 青色
-                    'rgba(153, 102, 255, 0.3)',  # 紫色
+                    'rgba(255, 99, 132, 0.4)',   # 红色
+                    'rgba(54, 162, 235, 0.4)',   # 蓝色
+                    'rgba(255, 206, 86, 0.4)',   # 黄色
+                    'rgba(75, 192, 192, 0.4)',   # 青色
+                    'rgba(153, 102, 255, 0.4)',  # 紫色
                 ]
                 
-                # 生成Token展示HTML
+                # 生成Token展示HTML，添加hover效果
                 token_html = '<div class="token-container">'
                 for i, token in enumerate(tokens):
                     color = colors[i % len(colors)]
@@ -567,12 +579,14 @@ def main():
                         <span class="token-item" style="
                             background-color: {color};
                             animation: tokenAppear 0.5s ease forwards;
-                            animation-delay: {i * 0.1}s;">
+                            animation-delay: {i * 0.15}s;
+                            transition: transform 0.2s ease, box-shadow 0.2s ease;
+                            cursor: pointer;
+                            " onmouseover="this.style.transform='scale(1.1)';this.style.boxShadow='0 4px 8px rgba(0,0,0,0.2)'"
+                            onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'">
                             {token}
                         </span>'''
                 token_html += '</div>'
-                
-                # st.markdown(token_html, unsafe_allow_html=True)
                 
                 # 显示分词结果
                 st.markdown(token_html, unsafe_allow_html=True)
