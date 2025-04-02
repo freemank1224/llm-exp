@@ -175,7 +175,7 @@ def main():
             ax.patch.set_alpha(0.0)
             
             # 绘制散点图，参数规模夸大显示
-            sizes_scaled = [s ** 1.15 for s in sizes]  # 调整指数以获得更好的视觉效果
+            sizes_scaled = [s ** 1.35 for s in sizes]  # 调整指数以获得更好的视觉效果
             scatter = ax.scatter(x, y, s=sizes_scaled, 
                             c=['#FF9999', '#66B2FF', '#99FF99', 
                                 '#FFCC99', '#99CCFF'],  # 修正颜色数组长度
@@ -190,14 +190,14 @@ def main():
                     textcoords="offset points",
                     ha='center',
                     va='center',
-                    fontsize=12,
+                    fontsize=15,
                     color='white',
                     bbox=None  # 移除背景框
                 )
             
             # 设置坐标轴
             ax.set_ylim(0, 2.5)
-            ax.set_xlim(2021.5, 2024.5)
+            ax.set_xlim(2021.5, 2024.8)  # 缩小横轴范围，使年份更紧凑
             ax.set_xticks([2022, 2023, 2024])
             ax.set_xticklabels(['2022年', '2023年', '2024年'], fontsize=14, color='gray')
             
