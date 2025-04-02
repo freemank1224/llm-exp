@@ -1,4 +1,5 @@
 import streamlit as st
+from score_manager import init_score_state, update_score, get_score_status, reset_section_score
 
 def main():
     # 初始化session states
@@ -6,6 +7,9 @@ def main():
         st.session_state.column_index = 0
     if 'content_index' not in st.session_state:
         st.session_state.content_index = {0: 0, 1: 0, 2: 0}  # 每列的内容显示进度
+
+    # 初始化分数状态
+    init_score_state(st)
 
     # 注入CSS样式
     st.markdown("""
@@ -99,15 +103,15 @@ def main():
     """, unsafe_allow_html=True)
 
     # 标题部分
-    st.markdown('<h1 class="gradient-title">什么是大语言模型LLM？</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="gradient-title">什么是「大语言模型」？</h1>', unsafe_allow_html=True)
     st.markdown("")
 
     # 创建标签页
-    tab1, tab2 = st.tabs(["你用过Deepseek吗？", "大语言模型因何得名？"])
+    tab1, tab2 = st.tabs(["你用过「大语言模型吗」", "为什么叫「大语言模型」"])
 
     # 第一个标签页内容
     with tab1:
-        col_tab1 = st.columns([0.6, 0.4])
+        col_tab1 = st.columns([0.55, 0.05, 0.4])
         with col_tab1[0]:
             st.markdown("""
                 <div class="fade_in">
@@ -115,7 +119,7 @@ def main():
                 </div>
             """, unsafe_allow_html=True)
             
-            st.image("./images/DeepSeek_logo.png", width=400)
+            st.image("./images/DeepSeek_logo.png", width=500)
             st.link_button(url="https://deepseek.com", label="前往Deepseek👉")
             st.divider()
 
@@ -131,10 +135,9 @@ def main():
                     <h3>你还用过类似的AI聊天工具吗？</h3>
                 </div>
             """, unsafe_allow_html=True)
-            st.markdown("")
-            
-            # 修复列创建语法
-            sub_col = st.columns([0.25, 0.125, 0.25, 0.125, 0.25])  # 使用括号而不是方括号
+            st.markdown("")            
+            # 排列LLM图标
+            sub_col = st.columns([0.2, 0.2, 0.2, 0.2, 0.2])  # 使用括号而不是方括号
             with sub_col[0]:
                 st.image("./images/grok.png")
             with sub_col[2]:
@@ -142,14 +145,71 @@ def main():
             with sub_col[4]:
                 st.image("./images/claude.png")
 
+        with col_tab1[2]:
+            st.markdown('')
+            st.markdown('<h1 class="gradient-title">它们统称「大语言模型」!</h1>', unsafe_allow_html=True)
+            st.markdown('<h2 class="gradient-title">Large Language Model</h2>', unsafe_allow_html=True) 
+            st.divider()
+
+            # 创建单选题
+            st.subheader("应该如何读它？")
+            
+            # 初始化答题状态
+            if 'quiz_1_answered' not in st.session_state:
+                st.session_state.quiz_1_answered = False
+            if 'show_answer_feedback' not in st.session_state:
+                st.session_state.show_answer_feedback = False
+
+            option_selected = st.radio(
+                "",
+                ["A. 「大语言」+「模型」", "B. 「大」+「语言模型」"],
+                key="quiz_1"
+            )
+
+            btn_l, btn_r = st.columns([0.5, 0.5])
+            with btn_l:
+            # 添加提交按钮
+                if st.button("提交答案", key="submit_quiz_1", type="primary"):
+                    st.session_state.show_answer_feedback = True
+                    if not st.session_state.quiz_1_answered:  # 只有第一次回答才计分
+                        if option_selected == "B. 「大」+「语言模型」":
+                            update_score(st, "问题引入", 1)  # 更新分数
+                        st.session_state.quiz_1_answered = True
+
+                # 显示答案反馈
+                if st.session_state.show_answer_feedback:
+                    if option_selected == "B. 「大」+「语言模型」":
+                        st.success("✅ 回答正确！")
+                    else:
+                        st.error("❌ 回答错误。正确答案是：「大」+「语言模型」")
+
+                # 显示本节得分
+                score_status = get_score_status(st)
+                st.sidebar.markdown(f"### 本节得分: {score_status['sections']['问题引入']['score']}/{score_status['sections']['问题引入']['max']}")
+
+            with btn_r:
+                # 添加重置按钮
+                if st.button("重新作答", key="reset_quiz_1"):
+                    st.session_state.quiz_1_answered = False
+                    st.session_state.show_answer_feedback = False
+                    reset_section_score(st, "问题引入")  # 重置本节分数
+                    st.rerun()
+
+            st.divider()
+
+            if st.session_state.quiz_1_answered:
+                st.subheader("❓「大」：指的是什么？")
+                st.subheader("❓「语言模型」是什么？")
+                
+
     # 第二个标签页内容
     with tab2:
 
-        col_tab2 = st.columns([0.7, 0.3])
+        col_tab2 = st.columns([0.65, 0.05, 0.3])
         with col_tab2[0]:
             st.markdown("""
             <div style='text-align: center; color: #ff7c00; font-size: 2em; margin: 0 0 30px 0; font-weight: 1000'>
-                大模型的发展
+                「大语言模型」的规模对比
             </div>
         """, unsafe_allow_html=True)
 
@@ -219,7 +279,7 @@ def main():
             plt.tight_layout()
             st.pyplot(fig)
 
-        with col_tab2[1]:
+        with col_tab2[2]:
             st.markdown("""
             <div style='text-align: center; color: #ff7c00; font-size: 2em; margin: 0 0 30px 0; font-weight: 1000'>
                 与Deepseek对比
@@ -246,10 +306,6 @@ def main():
             """, unsafe_allow_html=True) 
 
 
-            
-
-
-
     # 第三个标签页内容
     # with tab3:
     #     st.markdown("""
@@ -257,10 +313,6 @@ def main():
     #             大语言模型因何得名？
     #         </div>
     #     """, unsafe_allow_html=True)
-
-
-        
- 
 
     # 不再需要column_index和重置按钮
     if 'column_index' in st.session_state:
