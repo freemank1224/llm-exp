@@ -147,7 +147,7 @@ def main():
 
         with col_tab1[2]:
             st.markdown('')
-            st.markdown('<h1 class="gradient-title">它们统称「大语言模型」!</h1>', unsafe_allow_html=True)
+            st.markdown('<h2 class="gradient-title">它们统称「大语言模型」!</h2>', unsafe_allow_html=True)
             st.markdown('<h2 class="gradient-title">Large Language Model</h2>', unsafe_allow_html=True) 
             st.divider()
 

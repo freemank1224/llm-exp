@@ -270,16 +270,16 @@ def main():
     """, unsafe_allow_html=True)
 
     #st.title("语言模型原理图解")
-    st.markdown('<h1 class="gradient-title">大语言模型是怎么工作的？</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="gradient-title">「大语言模型」是怎么工作的？</h1>', unsafe_allow_html=True)
     st.markdown("")
     # st.markdown('<p style="text-align: center; font-size: 1.5em; color: #666;">构思一个场景，然后一个字一个字的写在本子上</p>', unsafe_allow_html=True)    
-    tabs = st.tabs(["「写话」的技巧", "你是怎么写作文的", "大语言模型如何「写作文」", "什么是「词元」"])
+    tabs = st.tabs(["你是怎么写作文的", "「写话」的技巧", "大语言模型如何「写作文」", "什么是「词元」"])
     
     # 基础句子
     base_sentence = "今天星期六，天气晴朗，我和" 
 
 
-    with tabs[0]:
+    with tabs[1]:
         top_l, top_r = st.columns([0.8, 0.2])
         with top_l:
             st.markdown("""
@@ -452,7 +452,7 @@ def main():
                 st.session_state.current_step += 1
                 st.rerun()
         
-    with tabs[1]:
+    with tabs[0]:
         col_tab = st.columns([0.4, 0.05, 0.55])
 
         with col_tab[2]:
