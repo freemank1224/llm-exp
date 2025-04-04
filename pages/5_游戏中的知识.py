@@ -129,6 +129,9 @@ def main():
     # 初始化分数状态
     init_score_state(st)
 
+    if 'show_right_column' not in st.session_state:
+        st.session_state.show_right_column = 0
+
     # 注入CSS和JavaScript
     st.markdown("""
         <style>
@@ -142,6 +145,18 @@ def main():
             padding: 20px 0;
             margin-bottom: 30px;
         }
+        
+        .gradient-content {
+            background: linear-gradient(120deg, #ffbe00 0%, #ff7c00 40%, #dd0000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 5em;
+            font-weight: 1000;
+            text-align: left;
+            padding: 20px 0;
+            margin-bottom: 30px;                                
+        }
+                
         /* 标签样式 */
         button[data-baseweb="tab"] {
             font-size: 1.8rem !important;
@@ -161,7 +176,7 @@ def main():
         }
 
         [data-testid="stTabsContent"] {
-            padding: 2rem 0 !important;
+            padding: 2rem 0 !重要;
             background: none !important;
             border: none !important;
         }
@@ -469,43 +484,91 @@ def main():
 
     with tabs[1]:
         st.header("思考两个问题")
-
-        questions = [
-            {
-                "question": "数量少的小球会被抽到吗？",
-                "options": [
-                    "😊如果抽取的次数足够多，那么即便数量很少的小球也会被抽到",
-                    "😭它永远都不会被抽到"
-                ],
-                "correct": 0
-            },
-            {
-                "question": "某个小球对应的概率非常大，说明：",
-                "options": [
-                    "如果抽取一次，这个小球一定会被抽到",
-                    "这个小球会被抽到的可能性更大"
-                ],
-                "correct": 1
-            }
-        ]
-
-        for i, q in enumerate(questions):
-            st.subheader(f"问题 {i+1}")
-            st.write(q["question"])
-            answer = st.radio("选择答案:", q["options"], key=f"q_{i}")
-            
-            if st.button("提交", key=f"submit_{i}"):
-                if q["options"].index(answer) == q["correct"]:
-                    st.success("✅ 回答正确！")
-                    update_score(st, "游戏中的知识", 1)  # 每道题2分
-                    # 触发烟花效果
-                    st.markdown(
-                        f"""<script>createFirework();</script>""", 
-                        unsafe_allow_html=True
-                    )
-                else:
-                    st.error("❌ 回答错误。")
         
+        # 创建左右分栏
+        sum_left, sum_right = st.columns([1, 1])
+        
+        with sum_left:
+            questions = [
+                {
+                    "question": "数量少的小球会被抽到吗？",
+                    "options": [
+                        "😊如果抽取的次数足够多，那么即便数量很少的小球也会被抽到",
+                        "😭它永远都不会被抽到"
+                    ],
+                    "correct": 0
+                },
+                {
+                    "question": "某个小球对应的概率非常大，说明：",
+                    "options": [
+                        "如果抽取一次，这个小球一定会被抽到",
+                        "这个小球会被抽到的可能性更大"
+                    ],
+                    "correct": 1
+                }
+            ]
+
+            for i, q in enumerate(questions):
+                st.subheader(f"问题 {i+1}")
+                st.write(q["question"])
+                answer = st.radio("选择答案:", q["options"], key=f"q_{i}")
+                
+                if st.button("提交", key=f"submit_{i}"):
+                    if q["options"].index(answer) == q["correct"]:
+                        st.success("✅ 回答正确！")
+                        update_score(st, "游戏中的知识", 1)
+                        st.markdown(
+                            f"""<script>createFirework();</script>""", 
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        st.error("❌ 回答错误。")
+        
+        if st.button("继续", key="continue_button"):
+            # 显示右侧内容
+            st.session_state.show_right_column += 1
+            st.rerun()
+
+        with sum_right:
+            if st.session_state.show_right_column != 0:
+                # 显示右侧内容
+                st.markdown("""
+                            <h2 class="gradient-title">猜猜「温度」参数的作用</h3>
+                            """,unsafe_allow_html=True)
+                st.markdown("---")
+            
+            # 创建两列来展示选项
+            temp_col1, temp_col2 = st.columns(2)
+            
+            if st.session_state.show_right_column > 1:
+                with temp_col1:
+                    st.markdown("""
+                        <div style="padding: 20px; border-radius: 10px; background: rgba(255,40,50,0.2);">
+                            <h4>温度越高 🌡️⬆️</h4>
+                            <p>选项间概率差别越小，概率低的被选中的可能性会提高，答案越随机</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    
+                with temp_col2:
+                    st.markdown("""
+                        <div style="padding: 20px; border-radius: 10px; background: rgba(0,160,200,0.2);">
+                            <h4>温度越低 🌡️⬇️</h4>
+                            <p>选项之间概率差别越大，高概率的答案就越容易被选中，答案越确定</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+            
+            if st.session_state.show_right_column > 2:
+                st.markdown("")
+                st.subheader("温度，用来调节回复内容的「随机性」")
+                st.markdown("""
+                            <h6 class="gradient-content">⬆提高温度，选项之间概率差别变小，答案更「随机」，LLM更能拼凑出「开脑洞」的答案；</h6>
+                            """, unsafe_allow_html=True
+                        )
+                st.markdown("""
+                            <h6 class="gradient-content">⬇降低温度，选项之间概率差距被拉大，答案更「确定」，LLM的回答更加「严谨」；</h6>
+                            """, unsafe_allow_html=True
+                        )                
+
         # 修改显示得分的代码，使用正确的变量名
         score_status = get_score_status(st)
         st.sidebar.markdown(f"### 本节得分: {score_status['sections']['游戏中的知识']['score']}/5")

@@ -429,7 +429,7 @@ def main():
                 **它是一个字一个字显示出来的！**
                 """)
 
-        tab2_l, _, tab2_r = st.columns([0.5, 0.05, 0.45])
+        tab2_l, _, tab2_r = st.columns([0.55, 0.05, 0.4])
         
         with tab2_l:
         # 第二步内容
@@ -482,7 +482,7 @@ def main():
             if st.session_state.current_step >= 2:
                 st.markdown("""
                     <div class="fade-in">
-                    <h2>3. 究竟是按字，还是按词生成呢？</h2>
+                    <h2>3.究竟是按字，还是按词生成呢？</h2>
                     </div>
                 """, unsafe_allow_html=True)
 

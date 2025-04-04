@@ -7,6 +7,8 @@ def main():
         st.session_state.column_index = 0
     if 'content_index' not in st.session_state:
         st.session_state.content_index = {0: 0, 1: 0, 2: 0}  # 每列的内容显示进度
+    if 'get_next_content' not in st.session_state:
+        st.session_state.get_next_content = 0
 
     # 初始化分数状态
     init_score_state(st)
@@ -123,8 +125,10 @@ def main():
             with subcol_l:            
                 st.image("./images/DeepSeek_logo.png", width=350)                
             with subcol_r:
-                st.link_button(url="https://deepseek.com", label="前往Deepseek👉")    
+                st.markdown("")
                 
+                st.link_button(url="https://deepseek.com", label="前往Deepseek👉", type="secondary")    
+
             st.divider()
 
             st.markdown("""
@@ -149,68 +153,75 @@ def main():
             with sub_col[4]:
                 st.image("./images/claude.png")
 
+            st.divider()
+
+            if st.button("揭秘👉", type="primary"):
+                st.session_state.get_next_content = 1
+                st.rerun()
+        
         with col_tab1[2]:
-            st.markdown('')
-            st.markdown('<h2 class="gradient-title">它们是「大语言模型」!</h2>', unsafe_allow_html=True)
-            st.markdown('<h2 class="gradient-title">Large Language Model (LLM)</h2>', unsafe_allow_html=True) 
-            st.divider()
+            if st.session_state.get_next_content != 0:                
+                st.markdown('')
+                st.markdown('<h2 class="gradient-title">它们是「大语言模型」!</h2>', unsafe_allow_html=True)
+                st.markdown('<h2 class="gradient-title">Large Language Model (LLM)</h2>', unsafe_allow_html=True)
+                st.divider()
 
-            # 创建单选题
-            st.subheader("应该如何读它？")
-            
-            # 初始化答题状态
-            if 'quiz_1_answered' not in st.session_state:
-                st.session_state.quiz_1_answered = False
-            if 'show_answer_feedback' not in st.session_state:
-                st.session_state.show_answer_feedback = False
+                # 创建单选题
+                st.subheader("应该如何读它？")
 
-            option_selected = st.radio(
-                "",
-                ["A. 「大语言」+「模型」", "B. 「大」+「语言模型」"],
-                key="quiz_1"
-            )
-
-            btn_l, btn_r = st.columns([0.5, 0.5])
-            with btn_l:
-            # 添加提交按钮
-                if st.button("提交答案", key="submit_quiz_1", type="primary"):
-                    st.session_state.show_answer_feedback = True
-                    if not st.session_state.quiz_1_answered:  # 只有第一次回答才计分
-                        if option_selected == "B. 「大」+「语言模型」":
-                            update_score(st, "问题引入", 1)  # 更新分数
-                        st.session_state.quiz_1_answered = True
-
-                # 显示答案反馈
-                if st.session_state.show_answer_feedback:
-                    if option_selected == "B. 「大」+「语言模型」":
-                        st.success("✅ 回答正确！")
-                    else:
-                        st.error("❌ 回答错误。正确答案是：「大」+「语言模型」")
-
-                # 显示本节得分
-                score_status = get_score_status(st)
-                st.sidebar.markdown(f"### 本节得分: {score_status['sections']['问题引入']['score']}/{score_status['sections']['问题引入']['max']}")
-
-            with btn_r:
-                # 添加重置按钮
-                if st.button("重新作答", key="reset_quiz_1"):
+                # 初始化答题状态
+                if 'quiz_1_answered' not in st.session_state:
                     st.session_state.quiz_1_answered = False
+                if 'show_answer_feedback' not in st.session_state:
                     st.session_state.show_answer_feedback = False
-                    reset_section_score(st, "问题引入")  # 重置本节分数
-                    st.rerun()
 
-            st.divider()
+                option_selected = st.radio(
+                    "",
+                    ["A. 「大语言」+「模型」", "B. 「大」+「语言模型」"],
+                    key="quiz_1"
+                )
 
-            if st.session_state.quiz_1_answered:
-                st.subheader("❓「大」：指的是什么？")
-                st.subheader("❓「语言模型」是什么？")
+                btn_l, btn_r = st.columns([0.5, 0.5])
+                with btn_l:
+                # 添加提交按钮
+                    if st.button("提交答案", key="submit_quiz_1", type="primary"):
+                        st.session_state.show_answer_feedback = True
+                        if not st.session_state.quiz_1_answered:  # 只有第一次回答才计分
+                            if option_selected == "B. 「大」+「语言模型」":
+                                update_score(st, "问题引入", 1)  # 更新分数
+                            st.session_state.quiz_1_answered = True
+
+                    # 显示答案反馈
+                    if st.session_state.show_answer_feedback:
+                        if option_selected == "B. 「大」+「语言模型」":
+                            st.success("✅ 回答正确！")
+                        else:
+                            st.error("❌ 回答错误。正确答案是：「大」+「语言模型」")
+
+                    # 显示本节得分
+                    score_status = get_score_status(st)
+                    st.sidebar.markdown(f"### 本节得分: {score_status['sections']['问题引入']['score']}/{score_status['sections']['问题引入']['max']}")
+
+                with btn_r:
+                    # 添加重置按钮
+                    if st.button("重新作答", key="reset_quiz_1"):
+                        st.session_state.quiz_1_answered = False
+                        st.session_state.show_answer_feedback = False
+                        reset_section_score(st, "问题引入")  # 重置本节分数
+                        st.rerun()
+
+                st.divider()
+
+                if st.session_state.quiz_1_answered:
+                    st.subheader("❓「大」：指的是什么？")
+                    st.subheader("❓「语言模型」是什么？")
 
     with tab2: 
         tab2_l, _, tab2_r = st.columns([0.5, 0.05, 0.45])
         with tab2_l:         
             st.markdown("""
             <h2 class='gradient-title'>
-                语言模型：用人类语言和人交流的一种程序
+                用人类语言和人交流的一种程序
             </h2>
         """, unsafe_allow_html=True)
             
@@ -301,11 +312,17 @@ def main():
             
             plt.tight_layout()
             st.pyplot(fig)
+            st.markdown("")
+            st.markdown("""
+            <div style='text-align: center; color: #ff8c00; font-size: 2em; margin: 0 0 30px 0; font-weight: 1000'>
+                大 = 参数多
+            </div>
+            """, unsafe_allow_html=True)
 
         with col_tab2[2]:
             st.markdown("""
             <h3 class='gradient-title'>
-                以Deepseek-R1为例
+                它们究竟有多大？
             </h3>
             """, unsafe_allow_html=True) 
             st.divider()
@@ -323,11 +340,7 @@ def main():
             st.markdown("""- 仍未超过人脑的复杂度，人脑依然比LLM复杂
                         """)
             st.divider()
-            st.markdown("""
-            <div style='text-align: center; color: #ff8c00; font-size: 2em; margin: 0 0 30px 0; font-weight: 1000'>
-                大 = 参数多
-            </div>
-            """, unsafe_allow_html=True) 
+
 
 
     # 第三个标签页内容
