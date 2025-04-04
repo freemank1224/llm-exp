@@ -16,6 +16,8 @@ def main():
         st.session_state.input_key = 0  # 用于重置输入框
     if 'caution_flag' not in st.session_state:
         st.session_state.caution_flag = 0   # 用来显示⚠️文字
+    if 'image_flag' not in st.session_state:
+        st.session_state.image_flag = 0
 
     # 初始化分数状态
     init_score_state(st)
@@ -353,7 +355,7 @@ def main():
             
             # 添加新的备选词元
             new_option = st.text_input(
-                "输入新的备选词元:",
+                "输入你想到的词:",
                 key=f"new_option_{st.session_state.token_index}_{st.session_state.input_key}"
             )
             if st.button("添加", key=f"add_{st.session_state.token_index}", use_container_width=True) and new_option:
@@ -365,7 +367,7 @@ def main():
                     st.rerun()
 
         with col_r:
-            st.markdown("### 可选词元:")
+            st.markdown("### 脑海中的可选词:")
             
             # 定义配色方案
             colors = [
@@ -436,7 +438,7 @@ def main():
             if st.session_state.current_step >= 1:
                 st.markdown("""
                     <div class="fade-in">
-                    <h2>2. 你认为它是如何工作的？</h2>
+                    <h2>2. 你觉得它是如何工作的？</h2>
                     </div>
                 """, unsafe_allow_html=True)
 
@@ -474,46 +476,63 @@ def main():
                         else:
                             st.error("❌ 回答错误。")
 
+                    if st.session_state.caution_flag != 0:
+                        with st.expander("⚠️ 注意", expanded=True):  # expanded=True means it starts expanded
+                            st.markdown("""
+                                <div style="
+                                    background-color: rgba(255, 190, 0, 0.1);
+                                    border: 2px solid #ffbe00;
+                                    border-radius: 15px;
+                                    padding: 15px;">
+                                    <p style="color: #fff; line-height: 1.6;">
+                                        最新研究表明，虽然看起来大语言模型是生成一个显示一个，但在它的内部，有着像我们一样更复杂的「思考」，比如让它写一首诗，它会先考虑末尾字的押韵，先确定好最后一个字，再按顺序生成中间这部分词。发现这一点还多亏Anthropic公司的科学家们把大语言模型的「脑壳」打开后才观察到的。所以不能只凭观察到的现象来判断它的工作原理。
+                                    </p>
+                                </div>
+                            """, unsafe_allow_html=True)
+
             # 显示当前章节得分
             score_status = get_score_status(st)
             st.sidebar.markdown(f"### 本节得分: {score_status['sections']['原理图解']['score']}/{score_status['sections']['原理图解']['max']}")
 
-            # 第三步内容
             if st.session_state.current_step >= 2:
                 st.markdown("""
                     <div class="fade-in">
-                    <h2>3.究竟是按字，还是按词生成呢？</h2>
+                    <h2>3.大语言模型是怎么猜出每个备选词的？</h2>
                     </div>
                 """, unsafe_allow_html=True)
 
+                st.markdown("""
+                    <h3 class="gradient-text">读书破万卷，下笔如有神！—— 大语言模型的「预训练」！</h3>
+                """, unsafe_allow_html=True)    
+            
+            # 第三步内容
+            if st.session_state.current_step >= 3:
+                st.markdown("""
+                    <div class="fade-in">
+                    <h2>4.究竟是按字，还是按词生成呢？</h2>
+                    </div>
+                """, unsafe_allow_html=True)
+                st.session_state.image_flag = 1
+
             # 下一步按钮
-            if st.session_state.current_step < 2:  # 最多显示两个主题
+            if st.session_state.current_step < 3:  # 最多显示两个主题
                 if st.button("下一步 ▶", key="next_button"):
                     st.session_state.current_step += 1
                     st.rerun()
 
         with tab2_r:
-            if st.session_state.caution_flag != 0:
-                st.markdown("""
-                    <div style="
-                        background-color: rgba(255, 190, 0, 0.1);
-                        border: 2px solid #ffbe00;
-                        border-radius: 15px;
-                        padding: 20px;
-                        margin: 20px 0;">
-                        <h3 style="color: #ffbe00; margin-bottom: 15px;">⚠️ 注意</h3>
-                        <p style="color: #fff; line-height: 1.6;">
-                            根据最新研究，大语言模型也并非原先设想的那样，按顺序一个字一个词的生成，而是有更复杂的「思考」，不完全按文字顺序来预测。
-                        </p>
-                    </div>
-                """, unsafe_allow_html=True)
+            if st.session_state.image_flag != 0:
+                st.image('./images/Pretraining.png', use_container_width=True, caption="图像来源：由AI生成")
+                st.session_state.image_flag = 0
 
     with tabs[0]:
         col_tab = st.columns([0.4, 0.05, 0.55])
 
         with col_tab[2]:
+            st.markdown("")
             blocks = [
                 ("写作文的过程", "h1"),
+                ("---", "p"),
                 ("""
                 • 根据要求，规划段落（脑海）\n
                 • 确定段落中的句子（脑海）\n

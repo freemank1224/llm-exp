@@ -221,16 +221,16 @@ def main():
         with tab2_l:         
             st.markdown("""
             <h2 class='gradient-title'>
-                用人类语言和人交流的一种程序
+                🗣️ 用人类语言和人交流的一种程序
             </h2>
         """, unsafe_allow_html=True)
             
             st.divider()
             
-            st.markdown("🗣️「语言」就是我们每天与人交流所用的东西，我们听人讲话、和别人讲话，平时写作业都要使用语言。")
-            st.markdown("🇨🇳 不同国家的人使用不同的语言 🇺🇸🇬🇧🇫🇷")
-            st.markdown("💻「模型」就是一段AI程序，它的功能就是接收「语言」，并用「语言」回复。")
-            st.markdown("🤖「大语言模型」往往懂得不止一门语言，是一个「语言专家」。")
+            st.subheader("💡「语言」就是我们每天与人交流所用的东西，我们听人讲话、和别人讲话，平时写作业都要使用语言。")
+            st.subheader("💡 不同国家的人使用不同的语言 🇺🇸🇬🇧🇫🇷")
+            st.subheader("🤖「模型」就是一段AI程序，它的功能就是接收「语言」，并用「语言」回复。")
+            st.subheader("🤖「大语言模型」往往懂得不止一门语言，是一个「语言专家」。")
 
         with tab2_r:
             st.markdown("")

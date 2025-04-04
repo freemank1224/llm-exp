@@ -157,6 +157,24 @@ def main():
             margin-bottom: 30px;                                
         }
                 
+        .temp-box-left {
+            background: rgba(255, 40, 50, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .temp-box-left:hover {
+            transform: scale(1.05);
+        }
+        
+        .temp-box-right {
+            background: rgba(0,160,200,0.2);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .temp-box-right:hover {
+            transform: scale(1.05);
+        }
+                
         /* 标签样式 */
         button[data-baseweb="tab"] {
             font-size: 1.8rem !important;
@@ -516,7 +534,7 @@ def main():
                 if st.button("提交", key=f"submit_{i}"):
                     if q["options"].index(answer) == q["correct"]:
                         st.success("✅ 回答正确！")
-                        update_score(st, "游戏中的知识", 1)
+                        update_score(st, "游戏中的知识", 0.5)  # 修改为0.5分
                         st.markdown(
                             f"""<script>createFirework();</script>""", 
                             unsafe_allow_html=True
@@ -531,11 +549,14 @@ def main():
 
         with sum_right:
             if st.session_state.show_right_column != 0:
+                logo_l, logo_r = st.columns([0.05, 0.95])
+                with logo_l:
+                    st.markdown("<h2>🌡️</h2>", unsafe_allow_html=True)
+                with logo_r:
                 # 显示右侧内容
-                st.markdown("""
-                            <h2 class="gradient-title">猜猜「温度」参数的作用</h3>
-                            """,unsafe_allow_html=True)
-                st.markdown("---")
+                    st.markdown("""
+                                <h2 class="gradient-title">猜猜「温度」参数的作用</h2>
+                                """, unsafe_allow_html=True)
             
             # 创建两列来展示选项
             temp_col1, temp_col2 = st.columns(2)
@@ -543,16 +564,16 @@ def main():
             if st.session_state.show_right_column > 1:
                 with temp_col1:
                     st.markdown("""
-                        <div style="padding: 20px; border-radius: 10px; background: rgba(255,40,50,0.2);">
-                            <h4>温度越高 🌡️⬆️</h4>
+                        <div class="temp-box-left">
+                            <h4>温度越高 🔥</h4>
                             <p>选项间概率差别越小，概率低的被选中的可能性会提高，答案越随机</p>
                         </div>
                     """, unsafe_allow_html=True)
                     
                 with temp_col2:
                     st.markdown("""
-                        <div style="padding: 20px; border-radius: 10px; background: rgba(0,160,200,0.2);">
-                            <h4>温度越低 🌡️⬇️</h4>
+                        <div class="temp-box-right">
+                            <h4>温度越低 ❄️</h4>
                             <p>选项之间概率差别越大，高概率的答案就越容易被选中，答案越确定</p>
                         </div>
                     """, unsafe_allow_html=True)
@@ -561,17 +582,17 @@ def main():
                 st.markdown("")
                 st.subheader("温度，用来调节回复内容的「随机性」")
                 st.markdown("""
-                            <h6 class="gradient-content">⬆提高温度，选项之间概率差别变小，答案更「随机」，LLM更能拼凑出「开脑洞」的答案；</h6>
+                            <h5 class="gradient-content">⬆提高温度，选项之间概率差别变小，答案更「随机」，LLM更能拼凑出「开脑洞」的答案；</h5>
                             """, unsafe_allow_html=True
                         )
                 st.markdown("""
-                            <h6 class="gradient-content">⬇降低温度，选项之间概率差距被拉大，答案更「确定」，LLM的回答更加「严谨」；</h6>
+                            <h5 class="gradient-content">⬇降低温度，选项之间概率差距被拉大，答案更「确定」，LLM的回答更加「严谨」；</h5>
                             """, unsafe_allow_html=True
                         )                
 
-        # 修改显示得分的代码，使用正确的变量名
+        # 修改显示得分的代码，总分改为2
         score_status = get_score_status(st)
-        st.sidebar.markdown(f"### 本节得分: {score_status['sections']['游戏中的知识']['score']}/5")
+        st.sidebar.markdown(f"### 本节得分: {score_status['sections']['游戏中的知识']['score']}/2")
 
         # 这里添加总结的内容
 
