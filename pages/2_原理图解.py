@@ -14,6 +14,8 @@ def main():
         st.session_state.completed_tokens = []
     if 'input_key' not in st.session_state:
         st.session_state.input_key = 0  # 用于重置输入框
+    if 'caution_flag' not in st.session_state:
+        st.session_state.caution_flag = 0   # 用来显示⚠️文字
 
     # 初始化分数状态
     init_score_state(st)
@@ -304,7 +306,7 @@ def main():
     tabs = st.tabs(["你是怎么写作文的", "「写话」的技巧", "大语言模型如何「写作文」", "什么是「词元」"])
     
     # 基础句子
-    base_sentence = "今天星期六，天气晴朗，我和" 
+    base_sentence = "今天星期六，天气晴朗，我和"
 
 
     with tabs[1]:
@@ -312,7 +314,7 @@ def main():
         with top_l:
             st.markdown("""
                     <div class="fade-in">
-                    <h2>老师教我们怎么「写话」？</h2>
+                    <h2>我们如何写出一句话？</h2>
                     </div>
                 """, unsafe_allow_html=True)
         with top_r:
@@ -427,65 +429,85 @@ def main():
                 **它是一个字一个字显示出来的！**
                 """)
 
-        # 第二步内容
-        if st.session_state.current_step >= 1:
-            st.markdown("""
-                <div class="fade-in">
-                <h2>2. 你认为它是如何工作的？</h2>
-                </div>
-            """, unsafe_allow_html=True)
-
-            if "answers" not in st.session_state:
-                st.session_state.answers = {}
-
-            questions = [
-                {
-                    "question":"Deepseek这样工作：",
-                    "options":[
-                        "先把所有的内容生成完，然后一字一词的显示出来",
-                        "逐字逐词的生成，生成一个就马上显示出来，然后再生成下一个"
-                    ],
-                    "correct": 1
-                }
-            ]
-
-            for i, q in enumerate(questions):
-                # 检查这个问题是否已经回答正确
-                question_key = f"q_{i}_correct"
-                if question_key not in st.session_state:
-                    st.session_state[question_key] = False
-
-                answer = st.radio("", q["options"], key=f"q_{i}")
-
-                if st.button("提交", key=f"submit_{i}"):
-                    is_correct = q["options"].index(answer) == q["correct"]
-                    if is_correct and not st.session_state[question_key]:
-                        st.success("✅ 回答正确！")
-                        st.session_state[question_key] = True
-                        update_score(st, "原理图解", 1)  # 只在首次回答正确时更新分数
-                    elif is_correct and st.session_state[question_key]:
-                        st.success("✅ 回答正确！(已经获得过分数)")
-                    else:
-                        st.error("❌ 回答错误。")
-
-        # 显示当前章节得分
-        score_status = get_score_status(st)
-        st.sidebar.markdown(f"### 本节得分: {score_status['sections']['原理图解']['score']}/{score_status['sections']['原理图解']['max']}")
-
-        # 第三步内容
-        if st.session_state.current_step >= 2:
-            st.markdown("""
-                <div class="fade-in">
-                <h2>3. 究竟是逐字，还是逐词生成呢？</h2>
-                </div>
-            """, unsafe_allow_html=True)
-
-        # 下一步按钮
-        if st.session_state.current_step < 2:  # 最多显示两个主题
-            if st.button("下一步 ▶", key="next_button"):
-                st.session_state.current_step += 1
-                st.rerun()
+        tab2_l, _, tab2_r = st.columns([0.5, 0.05, 0.45])
         
+        with tab2_l:
+        # 第二步内容
+            if st.session_state.current_step >= 1:
+                st.markdown("""
+                    <div class="fade-in">
+                    <h2>2. 你认为它是如何工作的？</h2>
+                    </div>
+                """, unsafe_allow_html=True)
+
+                if "answers" not in st.session_state:
+                    st.session_state.answers = {}
+
+                questions = [
+                    {
+                        "question":"Deepseek这样工作：",
+                        "options":[
+                            "先把所有的内容生成完，然后一字一词的显示出来",
+                            "逐字逐词的生成，生成一个就马上显示出来，然后再生成下一个"
+                        ],
+                        "correct": 1
+                    }
+                ]
+
+                for i, q in enumerate(questions):
+                    # 检查这个问题是否已经回答正确
+                    question_key = f"q_{i}_correct"
+                    if question_key not in st.session_state:
+                        st.session_state[question_key] = False
+
+                    answer = st.radio("", q["options"], key=f"q_{i}")
+
+                    if st.button("提交", key=f"submit_{i}"):
+                        is_correct = q["options"].index(answer) == q["correct"]
+                        if is_correct and not st.session_state[question_key]:
+                            st.success("✅ 回答正确！")
+                            st.session_state[question_key] = True
+                            update_score(st, "原理图解", 1)  # 只在首次回答正确时更新分数
+                            st.session_state.caution_flag = 1
+                        elif is_correct and st.session_state[question_key]:
+                            st.success("✅ 回答正确！(已经获得过分数)")
+                        else:
+                            st.error("❌ 回答错误。")
+
+            # 显示当前章节得分
+            score_status = get_score_status(st)
+            st.sidebar.markdown(f"### 本节得分: {score_status['sections']['原理图解']['score']}/{score_status['sections']['原理图解']['max']}")
+
+            # 第三步内容
+            if st.session_state.current_step >= 2:
+                st.markdown("""
+                    <div class="fade-in">
+                    <h2>3. 究竟是按字，还是按词生成呢？</h2>
+                    </div>
+                """, unsafe_allow_html=True)
+
+            # 下一步按钮
+            if st.session_state.current_step < 2:  # 最多显示两个主题
+                if st.button("下一步 ▶", key="next_button"):
+                    st.session_state.current_step += 1
+                    st.rerun()
+
+        with tab2_r:
+            if st.session_state.caution_flag != 0:
+                st.markdown("""
+                    <div style="
+                        background-color: rgba(255, 190, 0, 0.1);
+                        border: 2px solid #ffbe00;
+                        border-radius: 15px;
+                        padding: 20px;
+                        margin: 20px 0;">
+                        <h3 style="color: #ffbe00; margin-bottom: 15px;">⚠️ 注意</h3>
+                        <p style="color: #fff; line-height: 1.6;">
+                            根据最新研究，大语言模型也并非原先设想的那样，按顺序一个字一个词的生成，而是有更复杂的「思考」，不完全按文字顺序来预测。
+                        </p>
+                    </div>
+                """, unsafe_allow_html=True)
+
     with tabs[0]:
         col_tab = st.columns([0.4, 0.05, 0.55])
 
@@ -527,8 +549,9 @@ def main():
     
     with tabs[3]:
         st.markdown("""
-        ## 「词元」是准确表达意思最小的有意义的单位！
-        """)
+                <h2 class="gradient-text">「词元」，是准确表达语义的最少的文字组合！</h2>
+                """, unsafe_allow_html=True)
+        # st.divider()
 
         # 初始化分词状态
         if 'predictor' not in st.session_state:
@@ -538,14 +561,18 @@ def main():
         if 'tokenized' not in st.session_state:
             st.session_state.tokenized = False
 
-        tab3_l, _, tab3_r = st.columns([0.45, 0.1, 0.45])
+        tab3_l, _, tab3_r = st.columns([0.5, 0.05, 0.45])
         with tab3_l:
-            st.subheader("✅「今天」：拆开都不能表示原来的意思")
+            st.divider()
+            st.subheader("💡举例：「今天」拆开后不能表示原来的意思！")
             st.markdown("- **今**：可能有「今晚」、「今年」等意思")
             st.markdown("- **天**：可能有「天气」、「天空」等意思")
 
+            st.subheader("🤖 大语言模型以「词元」为最小单位，「逐个词元」生成！")
+
         with tab3_r:
             # 示例文本
+            st.divider()
             sample_texts = {
                 "中文": "今天天气真不错，我们一起去春游吧！",
                 "英文": "The quick brown fox jumps over the lazy dog."
@@ -553,6 +580,7 @@ def main():
             selected_lang = st.radio("选择语言", ["中文", "英文"], key="token_lang")
             user_text = st.text_input("输入要分析的文本", value=sample_texts[selected_lang])
 
+        st.divider()
         if st.button("开始分词分析"):
             try:
                 # 获取对应的模型和分词器

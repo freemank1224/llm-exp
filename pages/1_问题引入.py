@@ -107,20 +107,24 @@ def main():
     st.markdown("")
 
     # 创建标签页
-    tab1, tab2 = st.tabs(["你用过「大语言模型吗」", "为什么叫「大语言模型」"])
+    tab1, tab2, tab3 = st.tabs(["你用过「大语言模型吗」", "「语言模型」是什么", "为什么说它「大」"])
 
     # 第一个标签页内容
     with tab1:
-        col_tab1 = st.columns([0.55, 0.05, 0.4])
+        col_tab1 = st.columns([0.5, 0.05, 0.45])
         with col_tab1[0]:
             st.markdown("""
                 <div class="fade_in">
                     <h3>你知道Deepseek吗？</h3>
                 </div>
             """, unsafe_allow_html=True)
-            
-            st.image("./images/DeepSeek_logo.png", width=500)
-            st.link_button(url="https://deepseek.com", label="前往Deepseek👉")
+
+            subcol_l, subcol_r = st.columns([0.7, 0.3])
+            with subcol_l:            
+                st.image("./images/DeepSeek_logo.png", width=350)                
+            with subcol_r:
+                st.link_button(url="https://deepseek.com", label="前往Deepseek👉")    
+                
             st.divider()
 
             st.markdown("""
@@ -147,8 +151,8 @@ def main():
 
         with col_tab1[2]:
             st.markdown('')
-            st.markdown('<h2 class="gradient-title">它们统称「大语言模型」!</h2>', unsafe_allow_html=True)
-            st.markdown('<h2 class="gradient-title">Large Language Model</h2>', unsafe_allow_html=True) 
+            st.markdown('<h2 class="gradient-title">它们是「大语言模型」!</h2>', unsafe_allow_html=True)
+            st.markdown('<h2 class="gradient-title">Large Language Model (LLM)</h2>', unsafe_allow_html=True) 
             st.divider()
 
             # 创建单选题
@@ -200,17 +204,36 @@ def main():
             if st.session_state.quiz_1_answered:
                 st.subheader("❓「大」：指的是什么？")
                 st.subheader("❓「语言模型」是什么？")
-                
 
-    # 第二个标签页内容
-    with tab2:
+    with tab2: 
+        tab2_l, _, tab2_r = st.columns([0.5, 0.05, 0.45])
+        with tab2_l:         
+            st.markdown("""
+            <h2 class='gradient-title'>
+                语言模型：用人类语言和人交流的一种程序
+            </h2>
+        """, unsafe_allow_html=True)
+            
+            st.divider()
+            
+            st.markdown("🗣️「语言」就是我们每天与人交流所用的东西，我们听人讲话、和别人讲话，平时写作业都要使用语言。")
+            st.markdown("🇨🇳 不同国家的人使用不同的语言 🇺🇸🇬🇧🇫🇷")
+            st.markdown("💻「模型」就是一段AI程序，它的功能就是接收「语言」，并用「语言」回复。")
+            st.markdown("🤖「大语言模型」往往懂得不止一门语言，是一个「语言专家」。")
+
+        with tab2_r:
+            st.markdown("")
+            st.image("./images/LLM.png")
+
+                    # 第二个标签页内容
+    with tab3:
 
         col_tab2 = st.columns([0.65, 0.05, 0.3])
         with col_tab2[0]:
             st.markdown("""
-            <div style='text-align: center; color: #ff7c00; font-size: 2em; margin: 0 0 30px 0; font-weight: 1000'>
+            <h3 class='gradient-title'>
                 「大语言模型」的规模对比
-            </div>
+            </h3>
         """, unsafe_allow_html=True)
 
             import matplotlib.pyplot as plt
@@ -281,16 +304,17 @@ def main():
 
         with col_tab2[2]:
             st.markdown("""
-            <div style='text-align: center; color: #ff7c00; font-size: 2em; margin: 0 0 30px 0; font-weight: 1000'>
-                与Deepseek对比
-            </div>
+            <h3 class='gradient-title'>
+                以Deepseek-R1为例
+            </h3>
             """, unsafe_allow_html=True) 
+            st.divider()
             st.markdown("""- 「新华字典」：收录13000字/总计45万字
                         """)
             st.markdown("""- 人脑：860亿神经元，每个神经元有1000个突触
                         """)
             st.divider()
-            st.markdown("""Deepseek-V3：
+            st.markdown("""Deepseek-R1：
                         """)
             st.markdown("""- 约等于40万本「新华字典」
                         """)
