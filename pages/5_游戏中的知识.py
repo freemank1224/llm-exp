@@ -129,6 +129,10 @@ def main():
     # 初始化分数状态
     init_score_state(st)
 
+    # 添加累计抽样次数状态
+    if 'total_samples_count' not in st.session_state:
+        st.session_state.total_samples_count = 0
+
     if 'show_right_column' not in st.session_state:
         st.session_state.show_right_column = 0
 
@@ -385,6 +389,10 @@ def main():
     tabs = st.tabs(["「摸小球」游戏：概率抽样", "游戏总结"])
     
     with tabs[0]:
+        # 在侧边栏添加抽样进度显示容器
+        sampling_status_container = st.sidebar.empty()
+        sampling_progress_container = st.sidebar.empty()
+        
         # st.header("概率抽样")
         
         # 创建左右分栏
@@ -457,6 +465,10 @@ def main():
                 st.session_state.total_sampling_results = {color: 0 for color in colors.keys()}
             display_results(chart_container, st.session_state.total_sampling_results, colors)
 
+            # 添加累计抽样次数显示
+            if st.session_state.total_samples_count > 0:
+                st.info(f"⭐️ 累计抽样 {st.session_state.total_samples_count} 次")
+
         with left_col:
             st.markdown("---")
             # 抽样控制部分
@@ -477,28 +489,26 @@ def main():
             # 处理按钮点击事件
             if reset_button:
                 st.session_state.total_sampling_results = {color: 0 for color in colors.keys()}
+                st.session_state.total_samples_count = 0  # 重置计数器
                 st.rerun()
                 
             if total_balls == 100 and sample_button:
                 batch_size = st.session_state.batch_size
                 # 执行抽样并实时更新结果
-                for _ in range(batch_size):
+                for i in range(batch_size):
                     result = sample_one_ball(st.session_state.balls_data)
                     st.session_state.total_sampling_results[result] += 1
+                    st.session_state.total_samples_count += 1
+                    
+                    # 实时更新抽样状态和进度条
+                    sampling_status_container.info(f"⭐️ 累计抽样次数：{st.session_state.total_samples_count}")
+                    sampling_progress_container.progress((i + 1) / batch_size)
+                    
                     display_results(chart_container, st.session_state.total_sampling_results, colors)
                     time.sleep(0.05)
-                update_score(st, "游戏中的知识", 1)  # 记录操作得分
                 
-                # 显示本次抽样结果统计
-                st.write("本次抽样结果：")
-                current_results = {color: 0 for color in colors.keys()}
-                for _ in range(batch_size):
-                    color = sample_one_ball(st.session_state.balls_data)
-                    current_results[color] += 1
-                
-                for color, count in current_results.items():
-                    if count > 0:
-                        st.write(f"{color}: {count}个")
+                # 完成后清空进度条
+                sampling_progress_container.empty()
 
     with tabs[1]:
         st.header("思考两个问题")

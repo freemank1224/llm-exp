@@ -218,7 +218,8 @@ def main():
 
     with tab2: 
         tab2_l, _, tab2_r = st.columns([0.5, 0.05, 0.45])
-        with tab2_l:         
+        with tab2_l:
+            st.markdown("")         
             st.markdown("""
             <h2 class='gradient-title'>
                 🗣️ 用人类语言和人交流的一种程序
@@ -239,7 +240,7 @@ def main():
                     # 第二个标签页内容
     with tab3:
 
-        col_tab2 = st.columns([0.65, 0.05, 0.3])
+        col_tab2 = st.columns([0.6, 0.05, 0.35])
         with col_tab2[0]:
             st.markdown("""
             <h3 class='gradient-title'>

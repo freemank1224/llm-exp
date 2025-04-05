@@ -70,7 +70,7 @@ def main():
             background: rgba(0, 0, 0, 0.1);
             padding: 2rem;
             border-radius: 10px;
-            margin: 20px 0;
+            margin: 10px 0;
         }
         
         /* 打字机文本样式 */
@@ -206,12 +206,14 @@ def main():
 
         /* 添加新的渐变文本样式 */
         .gradient-text {
-            font-size: 2.5em;  /* 统一字体大小 */
+            font-size: 3 em;  /* 统一字体大小 */
             background: linear-gradient(120deg, #ffbe00 0%, #ff7c00 40%, #dd0000 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: bold;
             display: inline;
+            margin: 10 10px;  /* 增加左右间距 */
+            padding: 5px 10px;  /* 增加内边距 */
         }
         
         /* 修改词元样式 */
@@ -224,7 +226,7 @@ def main():
         
         /* 基础句子样式 */
         .base-text {
-            font-size: 2.5em;  /* 调整为和词元一致的大小 */
+            font-size: 3em;  /* 调整为和词元一致的大小 */
             font-weight: bold;
             display: inline;
         }
@@ -257,7 +259,7 @@ def main():
 
         .token-container {
             margin: 30px 0;
-            line-height: 3.5;
+            line-height: 2;
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
@@ -407,7 +409,7 @@ def main():
         if st.session_state.current_step >= 0:
             st.markdown("""
                 <div class="fade-in">
-                <h2>1. Deepseek如何回答你的问题？</h2>
+                <h2>1. 「大语言模型」如何回答你的问题？</h2>
                 </div>
             """, unsafe_allow_html=True)
             
@@ -477,7 +479,7 @@ def main():
                             st.error("❌ 回答错误。")
 
                     if st.session_state.caution_flag != 0:
-                        with st.expander("⚠️ 注意", expanded=True):  # expanded=True means it starts expanded
+                        with st.expander("⚠️ 注意", expanded=False):  # expanded=True means it starts expanded
                             st.markdown("""
                                 <div style="
                                     background-color: rgba(255, 190, 0, 0.1);
@@ -501,9 +503,13 @@ def main():
                     </div>
                 """, unsafe_allow_html=True)
 
-                st.markdown("""
-                    <h3 class="gradient-text">读书破万卷，下笔如有神！—— 大语言模型的「预训练」！</h3>
-                """, unsafe_allow_html=True)    
+                pretraining_l, pretraining_r = st.columns([0.05, 0.95])
+                with pretraining_l:
+                    st.subheader("📚")
+                with pretraining_r:
+                    st.markdown("""
+                        <h2 class="gradient-text">读书破万卷，下笔如有神！—— 「预训练」！</h2>
+                    """, unsafe_allow_html=True)
             
             # 第三步内容
             if st.session_state.current_step >= 3:
@@ -567,10 +573,17 @@ def main():
                 st.rerun()
     
     with tabs[3]:
-        st.markdown("""
-                <h2 class="gradient-text">「词元」，是准确表达语义的最少的文字组合！</h2>
-                """, unsafe_allow_html=True)
-        # st.divider()
+        st.markdown("")
+        title_l, title_r = st.columns([0.1, 0.95])
+        with title_l:
+            st.markdown("""
+                    <h2 class="base-text">「词元」</h2>
+                    """, unsafe_allow_html=True)
+        with title_r:   
+            st.markdown("""
+                    <h2 class="gradient-text">是能准确表达语义的最少的文字组合！</h2>
+                    """, unsafe_allow_html=True)
+            # st.divider()
 
         # 初始化分词状态
         if 'predictor' not in st.session_state:
