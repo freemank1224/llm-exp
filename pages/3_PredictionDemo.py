@@ -1,8 +1,8 @@
 import streamlit as st
 from model import LLMPredictor
 import time
+import random  # 添加这一行
 
-# ...将原有 main.py 的内容完整复制到这里...
 def main():
     st.markdown("""
     <style>
@@ -183,7 +183,35 @@ def main():
         st.session_state.is_running = False
         st.session_state.predicting = False
 
-    # 修改预测逻辑，添加温度参数
+    # 添加自定义CSS样式
+    st.markdown("""
+        <style>
+        /* 增大预测结果的字体大小 */
+        .prediction-text {
+            font-size: 1.6em !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        /* 词元块样式 */
+        .token-block {
+            background: rgba(120, 120, 120, 0.15);
+            border-radius: 10px;
+            padding: 4px 15px;
+            margin: 2px 0;
+            border: 1px solid transparent;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        /* 自动模式下的选中效果 */
+        .token-block.selected {
+            background: rgba(255, 223, 0, 0.15);
+            border: 2px solid rgba(255, 200, 0, 0.8);
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
     def update_predictions():
         try:
             result = st.session_state.predictor.generate_next_token(
@@ -197,40 +225,34 @@ def main():
                 st.error("预测失败，请检查模型加载状态")
                 return
 
-            st.subheader("候选「词元」及其概率：")
+            # st.markdown("<h3 class='prediction-text'>候选「词元」及其概率：</h3>", unsafe_allow_html=True)
             
             # 显示预测结果
             for pred in result['predictions']:
                 token = pred['token']
                 prob = pred['probability']
-                is_sampled = pred.get('is_sampled', True)  # 获取是否被采样选中
+                is_sampled = pred.get('is_sampled', True)
                 
-                # 创建一个带有背景色的列布局
-                col_style = "background-color: #90EE90;" if is_sampled else ""
+                selected_class = "selected" if is_sampled and st.session_state.is_auto_mode else ""
+                
                 cols = st.columns([2, 6, 1, 1])
                 with cols[0]:
-                    if st.session_state.is_auto_mode:
-                        if is_sampled:
-                            st.markdown(f"**:green[Token: {token}]** 🎯")
-                        else:
-                            st.write(f"Token: {token}")
-                    else:
-                        st.write(f"Token: {token}")
+                    st.markdown(f"""
+                        <div class='token-block {selected_class}'>
+                            <div class='prediction-text'>{token}</div>
+                        </div>
+                    """, unsafe_allow_html=True)
                 
                 with cols[1]:
-                    progress_container = st.container()
-                    with progress_container:
-                        progress_bar = st.progress(0)
-                        progress_bar.progress(prob)
+                    st.progress(prob)
 
                 with cols[2]:
-                    if st.session_state.is_auto_mode:
-                        if is_sampled:
-                            st.markdown(f"**:green[{100 * prob:.2f}%]**")
-                        else:
-                            st.write(f"{100 * prob:.2f}%")
-                    else:
-                        st.write(f"{100 * prob:.2f}%")
+                    prob_color = "#FFD700" if is_sampled and st.session_state.is_auto_mode else "#A9A9A9"
+                    st.markdown(f"""
+                        <div class='prediction-text' style='color: {prob_color};'>
+                            {100 * prob:.2f}%
+                        </div>
+                    """, unsafe_allow_html=True)
                 
                 with cols[3]:
                     if not st.session_state.is_auto_mode:
