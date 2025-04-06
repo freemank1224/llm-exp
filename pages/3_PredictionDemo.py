@@ -57,6 +57,8 @@ def main():
         st.session_state.selected_token = None  # 新增：追踪选中的token
     if 'generation_interval' not in st.session_state:
         st.session_state.generation_interval = 0.5  # 添加默认生成间隔
+    if 'temp_highlight_token' not in st.session_state:  # 新增：用于临时高亮显示选中的词元
+        st.session_state.temp_highlight_token = None
 
     # 添加设置区域
     with st.sidebar:
@@ -233,7 +235,10 @@ def main():
                 prob = pred['probability']
                 is_sampled = pred.get('is_sampled', True)
                 
-                selected_class = "selected" if is_sampled and st.session_state.is_auto_mode else ""
+                # 修改选中类判断逻辑，增加手动模式下的临时高亮
+                selected_class = ""
+                if (is_sampled and st.session_state.is_auto_mode) or (not st.session_state.is_auto_mode and token == st.session_state.temp_highlight_token):
+                    selected_class = "selected"
                 
                 cols = st.columns([2, 6, 1, 1])
                 with cols[0]:
@@ -247,7 +252,11 @@ def main():
                     st.progress(prob)
 
                 with cols[2]:
-                    prob_color = "#FFD700" if is_sampled and st.session_state.is_auto_mode else "#A9A9A9"
+                    # 修改概率显示颜色逻辑
+                    prob_color = "#A9A9A9"  # 默认灰色
+                    if (is_sampled and st.session_state.is_auto_mode) or (not st.session_state.is_auto_mode and token == st.session_state.temp_highlight_token):
+                        prob_color = "#FFD700"  # 高亮显示为金色
+                    
                     st.markdown(f"""
                         <div class='prediction-text' style='color: {prob_color};'>
                             {100 * prob:.2f}%
@@ -256,10 +265,20 @@ def main():
                 
                 with cols[3]:
                     if not st.session_state.is_auto_mode:
-                        if st.button("选择", key=f"use_{token}", help=f"点击将'{token}'添加到文本中"):
-                            st.session_state.generated_text += token
+                        if st.button("选择", key=f"use_{token}"):
+                            # 设置临时高亮
+                            st.session_state.temp_highlight_token = token
                             st.rerun()
 
+            # 如果存在临时高亮的词元，等待后添加到文本
+            if not st.session_state.is_auto_mode and st.session_state.temp_highlight_token:
+                token = st.session_state.temp_highlight_token
+                time.sleep(0.5)  # 延时0.5秒
+                st.session_state.generated_text += token
+                st.session_state.temp_highlight_token = None  # 清除临时高亮状态
+                st.rerun()
+
+            # 自动模式的代码保持不变
             if st.session_state.is_auto_mode and st.session_state.is_running:
                 candidates = result['predictions']
                 selected_token = [item['token'] for item in candidates if item['is_sampled']][0]
