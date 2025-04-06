@@ -574,14 +574,14 @@ def main():
     
     with tabs[3]:
         st.markdown("")
-        title_l, title_r = st.columns([0.1, 0.95])
+        title_l, title_r = st.columns([0.12, 0.88])
         with title_l:
             st.markdown("""
-                    <h2 class="base-text">「词元」</h2>
+                    <h1 class="base-text">「词元」</h1>
                     """, unsafe_allow_html=True)
         with title_r:   
             st.markdown("""
-                    <h2 class="gradient-text">是能准确表达语义的最少的文字组合！</h2>
+                    <h1 class="gradient-text">能准确表达语义的最少的文字组合！</h1>
                     """, unsafe_allow_html=True)
             # st.divider()
 

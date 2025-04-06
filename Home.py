@@ -34,19 +34,26 @@ def main():
         
         /* 标题文本样式，调整上边距 */
         .title-text {
-            margin-top: -4rem;  /* 标题向上移动 */
+            margin-top: -4rem;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 9rem;
             font-weight: 1000;
             text-align: center;
-            background: linear-gradient(120deg, #ffbe00 0%, #ff7c00 40%, #dd0000 100%);
+            background: linear-gradient(to right, 
+                #ffbe00 0%,
+                #ff7c00 25%,
+                #dd0000 50%,
+                #ff7c00 75%,
+                #ffbe00 100%
+            );
+            background-size: 200% 100%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             opacity: 0;
             transform: translateY(20px);
-            animation: titleFadeIn 0.8s ease forwards;
+            animation: titleFadeIn 0.8s ease forwards, gradientFlow 5s linear infinite;
         }
         
         @keyframes titleFadeIn {
@@ -54,6 +61,12 @@ def main():
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+        
+        /* 修改：背景单向流动动画 */
+        @keyframes gradientFlow {
+            0% { background-position: 100% 50%; }
+            100% { background-position: -100% 50%; }
         }
         
         /* 副标题样式修改 */
@@ -64,9 +77,9 @@ def main():
         
         .subtitle-text {
             color: #888;
-            font-size: 3em;
+            font-size: 3.5em;
             text-align: center;
-            font-weight: 300;
+            font-weight: 400;
             margin-top: 25px;
         }
         
@@ -104,7 +117,7 @@ def main():
             vertical-align: middle;
             animation: blink 1s step-end infinite;
             opacity: 0;
-            animation-delay: 0.8s;  /* 与标题出现同步 */
+            animation-delay: 1s;  /* 与标题出现同步 */
         }
         </style>
     """, unsafe_allow_html=True)
@@ -114,15 +127,15 @@ def main():
         <div class="main-container">
             <div class="title-container">
                 <div class="title-text">
-                    <div>逐字预测的奥秘</div>
+                    <div>神奇的猜词小能手</div>
                     <div class="cursor"></div>
                 </div>
                 <div class="subtitle-container">
-                    <div class="subtitle-text">大语言模型是怎么工作的？</div>
+                    <div class="subtitle-text">『大语言模型』是怎么工作的？</div>
                 </div>
             </div>
             <div class="footer">
-                张国煜「戴森老师」 |  演讲时间：""" + datetime.now().strftime('%Y-%m-%d') + """
+                张国煜「戴森老师」 |   演讲时间：""" + datetime.now().strftime('%Y-%m-%d') + """
             </div>
         </div>
     """, unsafe_allow_html=True)
