@@ -536,6 +536,9 @@ def main():
                 }
             ]
 
+            # 计算最大分数
+            max_score = len(questions)
+            
             for i, q in enumerate(questions):
                 st.subheader(f"问题 {i+1}")
                 st.write(q["question"])
@@ -544,11 +547,15 @@ def main():
                 if st.button("提交", key=f"submit_{i}"):
                     if q["options"].index(answer) == q["correct"]:
                         st.success("✅ 回答正确！")
-                        update_score(st, "游戏中的知识", 0.5)  # 修改为0.5分
-                        st.markdown(
-                            f"""<script>createFirework();</script>""", 
-                            unsafe_allow_html=True
-                        )
+                        score_status = get_score_status(st)
+                        if ('sections' in score_status and 
+                            '游戏中的知识' in score_status['sections']):
+                            section = score_status['sections']['游戏中的知识']
+                            current_score = section.get('score', 0)
+                            # 使用动态计算的最大分数
+                            if current_score < max_score:
+                                update_score(st, "游戏中的知识", 1)
+                                st.markdown("""<script>createFirework();</script>""", unsafe_allow_html=True)
                     else:
                         st.error("❌ 回答错误。")
         
@@ -600,9 +607,10 @@ def main():
                             """, unsafe_allow_html=True
                         )                
 
-        # 修改显示得分的代码，总分改为2
+        # 修改显示得分的代码，使用动态计算的最大分数
         score_status = get_score_status(st)
-        st.sidebar.markdown(f"### 本节得分: {score_status['sections']['游戏中的知识']['score']}/2")
+        current_score = score_status.get('sections', {}).get('游戏中的知识', {}).get('score', 0)
+        st.sidebar.markdown(f"### 本节得分: {current_score}/{max_score}")
 
         # 这里添加总结的内容
 

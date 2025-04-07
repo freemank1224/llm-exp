@@ -528,7 +528,51 @@ def main():
 
         with tab2_r:
             if st.session_state.image_flag != 0:
-                st.image('./images/Pretraining.png', use_container_width=True, caption="图像来源：由AI生成")
+                # Define the list of images and their captions
+                images = [
+                    {'path': './images/Readbooks.png', 'caption': '图像由AI生成'},
+                    {'path': './images/Pretraining.png', 'caption': '图像由AI生成'},
+                    # Add more images as needed
+                ]
+                
+                # Initialize the image index in session state if not exists
+                if 'carousel_index' not in st.session_state:
+                    st.session_state.carousel_index = 0
+                
+                # Create columns for navigation buttons and image
+                col1, col2, col3 = st.columns([0.1, 0.8, 0.1])
+                
+                # Previous button
+                with col1:
+                    if st.button("◀"):
+                        st.session_state.carousel_index = (st.session_state.carousel_index - 1) % len(images)
+                        st.rerun()
+                
+                # Display current image
+                with col2:
+                    current_image = images[st.session_state.carousel_index]
+                    st.image(
+                    current_image['path'],
+                    use_container_width=True,
+                    caption=f"图像 {st.session_state.carousel_index + 1}/{len(images)}: {current_image['caption']}"
+                    )
+                
+                # Next button
+                with col3:
+                    if st.button("▶"):
+                        st.session_state.carousel_index = (st.session_state.carousel_index + 1) % len(images)
+                        st.rerun()
+                
+                # Display navigation dots
+                dots_html = '<div style="text-align: center; margin-top: 10px;">'
+                for i in range(len(images)):
+                    if i == st.session_state.carousel_index:
+                        dots_html += '●' + '&nbsp;'
+                    else:
+                        dots_html += '○' + '&nbsp;'
+                dots_html += '</div>'
+                st.markdown(dots_html, unsafe_allow_html=True)
+                
                 st.session_state.image_flag = 0
 
     with tabs[0]:

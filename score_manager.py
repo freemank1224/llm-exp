@@ -5,7 +5,7 @@ def init_score_state(st):
             "问题引入": {"score": 0, "max": 1},     # 添加问题引入章节
             "原理图解": {"score": 0, "max": 1},
             "实践评估": {"score": 0, "max": 2},
-            "游戏中的知识": {"score": 0, "max": 5}  # 总分：抽样操作1分 + 两道题各2分
+            "游戏中的知识": {"score": 0, "max": 2}  # 总分：抽样操作1分 + 两道题各2分
         }
         st.session_state.total_score = 0
         st.session_state.max_score = sum(section["max"] for section in st.session_state.sections.values())

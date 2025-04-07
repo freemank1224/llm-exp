@@ -229,17 +229,15 @@ def main():
             st.divider()
             
             st.subheader("💡「语言」就是我们每天与人交流所用的东西，我们听人讲话、和别人讲话，平时写作业都要使用语言。")
-            st.subheader("💡 不同国家的人使用不同的语言 🇺🇸🇬🇧🇫🇷")
             st.subheader("🤖「模型」就是一段AI程序，它的功能就是接收「语言」，并用「语言」回复。")
-            st.subheader("🤖「大语言模型」往往懂得不止一门语言，是一个「语言专家」。")
+            st.subheader("🤖 不同国家说不同的语言，「大语言模型」往往懂得不止一门语言，是一个「语言专家」。")
 
         with tab2_r:
             st.markdown("")
-            st.image("./images/LLM.png")
+            st.image("./images/LLM.png", caption="图像由AI生成")
 
-                    # 第二个标签页内容
+
     with tab3:
-
         col_tab2 = st.columns([0.6, 0.05, 0.35])
         with col_tab2[0]:
             st.markdown("""
