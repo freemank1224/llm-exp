@@ -531,6 +531,7 @@ def main():
                 # Define the list of images and their captions
                 images = [
                     {'path': './images/Readbooks.png', 'caption': '图像由AI生成'},
+                    {'path': './images/WritingKid.png', 'caption': '图像由AI生成'},
                     {'path': './images/Pretraining.png', 'caption': '图像由AI生成'},
                     # Add more images as needed
                 ]
