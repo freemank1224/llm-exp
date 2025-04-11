@@ -26,6 +26,14 @@ def main():
             padding: 20px 0;
             margin-bottom: 100px;
         }
+                
+        .large-text {
+            font-size: 1.5em;
+            font-weight: 400;
+            text-align: left;
+            padding: 10px 0px;
+            margin-bottom: 20px;
+        }
 
         .content-block {
             opacity: 0;
@@ -228,9 +236,9 @@ def main():
             
             st.divider()
             
-            st.subheader("💡「语言」就是我们每天与人交流所用的东西，我们听人讲话、和别人讲话，平时写作业都要使用语言。")
-            st.subheader("🤖「模型」就是一段AI程序，它的功能就是接收「语言」，并用「语言」回复。")
-            st.subheader("🤖 不同国家说不同的语言，「大语言模型」往往懂得不止一门语言，是一个「语言专家」。")
+            st.markdown("<div class='large-text'>💡「语言」就是我们每天与人交流所用的东西，我们听人讲话、和别人讲话，平时写作业都要使用语言</div>", unsafe_allow_html=True)
+            st.markdown("<div class='large-text'>🤖「模型」就是一段AI程序，它的功能就是接收「语言」，并用「语言」回复。</div>", unsafe_allow_html=True)
+            st.markdown("<div class='large-text'>🤖 不同国家说不同的语言，现在的「大语言模型」往往懂得不止一门语言，是一个「语言专家」。</div>", unsafe_allow_html=True)
 
         with tab2_r:
             st.markdown("")
@@ -314,32 +322,26 @@ def main():
             st.markdown("")
             st.markdown("""
             <div style='text-align: center; color: #ff8c00; font-size: 2em; margin: 0 0 30px 0; font-weight: 1000'>
-                大 = 参数多
+                「大」的意思是参数非常多！
             </div>
             """, unsafe_allow_html=True)
 
         with col_tab2[2]:
             st.markdown("""
             <h3 class='gradient-title'>
-                它们究竟有多大？
+                比比看Deepseek有多大？
             </h3>
             """, unsafe_allow_html=True) 
             st.divider()
-            st.markdown("""- 「新华字典」：收录13000字/总计45万字
-                        """)
-            st.markdown("""- 人脑：860亿神经元，每个神经元有1000个突触
-                        """)
-            st.divider()
-            st.markdown("""Deepseek-R1：
-                        """)
-            st.markdown("""- 约等于40万本「新华字典」
-                        """)
-            st.markdown("""- 神经元个数计算:约8个；突触数量计算:1/128
-                        """)
-            st.markdown("""- 仍未超过人脑的复杂度，人脑依然比LLM复杂
-                        """)
+            st.markdown("""<div class='large-text'>📚「新华字典」：收录13000字/总计45万字</div>""", unsafe_allow_html=True)
+            st.markdown("""<div class='large-text'>🧠 人脑：860亿神经元，每个神经元有1000个突触""", unsafe_allow_html=True)
             st.divider()
 
+            st.markdown("<div class='large-text'>❗️约等于150万本「新华字典」,和花生估算一下</div>", unsafe_allow_html=True)
+            st.markdown("<div class='large-text'>❔仍未超过人脑的复杂度，人脑依然比它复杂</div>", unsafe_allow_html=True)
+            st.divider()
+
+            st.markdown("⚠️ 2025年又涌现了几个非常厉害的LLM，但是它们并没有公布参数，但是从它们训练所需要的硬件来看，比Deepseek要大很多！")
 
 
     # 第三个标签页内容

@@ -510,6 +510,21 @@ def main():
                     st.markdown("""
                         <h2 class="gradient-text">读书破万卷，下笔如有神！—— 「预训练」！</h2>
                     """, unsafe_allow_html=True)
+
+                with st.expander("🎓 小知识", expanded=False):  # expanded=True means it starts expanded
+                    st.markdown("""
+                        <div style="
+                            background-color: rgba(180, 255, 0,0.1);
+                            border: 2px solid #9bff00;
+                            border-radius: 15px;
+                            padding: 15px;">
+                            <p style="color: #fff; line-height: 1.6; font-size: 1.2em;">
+                                如果一个人去读GPT-4预训练所用数据（约13万亿个词元），即便24小时不停的阅读，大概需要8.2万年才能读完！🤯
+                            </p>
+                        </div>
+                    """, unsafe_allow_html=True)
+
+                st.session_state.image_flag = 1
             
             # 第三步内容
             if st.session_state.current_step >= 3:
@@ -518,7 +533,7 @@ def main():
                     <h2>4.究竟是按字，还是按词生成呢？</h2>
                     </div>
                 """, unsafe_allow_html=True)
-                st.session_state.image_flag = 1
+                
 
             # 下一步按钮
             if st.session_state.current_step < 3:  # 最多显示两个主题

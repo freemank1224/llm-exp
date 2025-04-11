@@ -383,7 +383,7 @@ def main():
         </script>
     """, unsafe_allow_html=True)
 
-    st.markdown('<h1 class="gradient-title">游戏中的知识</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="gradient-title">一起玩一个「抽小球」的游戏：概率抽样</h1>', unsafe_allow_html=True)
     st.markdown("")
 
     tabs = st.tabs(["「摸小球」游戏：概率抽样", "游戏总结"])
