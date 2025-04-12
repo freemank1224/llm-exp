@@ -25,6 +25,7 @@ def main():
             text-align: center;
             padding: 20px 0;
             margin-bottom: 100px;
+            animation: titleFadeIn 0.8s ease forwards, gradientFlow 5s linear infinite;
         }
                 
         .large-text {
@@ -50,6 +51,12 @@ def main():
             opacity: 0;
             transform: translateX(-20px);
             animation: slideIn 0.5s ease forwards;
+        }
+                
+        /* 修改：背景单向流动动画 */
+        @keyframes gradientFlow {
+            0% { background-position: 100% 50%; }
+            100% { background-position: -100% 50%; }
         }
 
         @keyframes fadeIn {
@@ -322,14 +329,14 @@ def main():
             st.markdown("")
             st.markdown("""
             <div style='text-align: center; color: #ff8c00; font-size: 2em; margin: 0 0 30px 0; font-weight: 1000'>
-                「大」的意思是参数非常多！
+                ⚠️ 「大」的意思是参数非常多！
             </div>
             """, unsafe_allow_html=True)
 
         with col_tab2[2]:
             st.markdown("""
             <h3 class='gradient-title'>
-                比比看Deepseek有多大？
+                比比看Deepseek有多「大」？
             </h3>
             """, unsafe_allow_html=True) 
             st.divider()
@@ -337,7 +344,7 @@ def main():
             st.markdown("""<div class='large-text'>🧠 人脑：860亿神经元，每个神经元有1000个突触""", unsafe_allow_html=True)
             st.divider()
 
-            st.markdown("<div class='large-text'>❗️约等于150万本「新华字典」,和花生估算一下</div>", unsafe_allow_html=True)
+            st.markdown("<div class='large-text'>❗️约等于150万本「新华字典」，能铺满5个操场</div>", unsafe_allow_html=True)
             st.markdown("<div class='large-text'>❔仍未超过人脑的复杂度，人脑依然比它复杂</div>", unsafe_allow_html=True)
             st.divider()
 

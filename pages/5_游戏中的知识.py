@@ -135,6 +135,8 @@ def main():
 
     if 'show_right_column' not in st.session_state:
         st.session_state.show_right_column = 0
+    if 'show_next_content' not in st.session_state:
+        st.session_state.show_next_content = 0
 
     # 注入CSS和JavaScript
     st.markdown("""
@@ -200,7 +202,7 @@ def main():
         [data-testid="stTabsContent"] {
             padding: 2rem 0 !重要;
             background: none !important;
-            border: none !important;
+            border: none !重要;
         }
 
         /* 打字机动画容器 */
@@ -511,12 +513,13 @@ def main():
                 sampling_progress_container.empty()
 
     with tabs[1]:
-        st.header("思考两个问题")
+        st.subheader("思考两个问题")
         
         # 创建左右分栏
-        sum_left, sum_right = st.columns([1, 1])
+        sum_left, _, sum_right = st.columns([0.48, 0.04, 0.48])
         
         with sum_left:
+            # 定义问题列表
             questions = [
                 {
                     "question": "数量少的小球会被抽到吗？",
@@ -535,37 +538,75 @@ def main():
                     "correct": 1
                 }
             ]
-
+            
             # 计算最大分数
             max_score = len(questions)
+
+            sub_left, sub_right = st.columns([0.5, 0.5])
             
-            for i, q in enumerate(questions):
-                st.subheader(f"问题 {i+1}")
-                st.write(q["question"])
-                answer = st.radio("选择答案:", q["options"], key=f"q_{i}")
+            # 问题1放在左边
+            with sub_left:
+                st.subheader("A")
+                st.write(questions[0]["question"])
+                answer1 = st.radio("", questions[0]["options"], key="q_0")
                 
-                if st.button("提交", key=f"submit_{i}"):
-                    if q["options"].index(answer) == q["correct"]:
+                if st.button("提交", key="submit_0"):
+                    if questions[0]["options"].index(answer1) == questions[0]["correct"]:
                         st.success("✅ 回答正确！")
                         score_status = get_score_status(st)
                         if ('sections' in score_status and 
                             '游戏中的知识' in score_status['sections']):
                             section = score_status['sections']['游戏中的知识']
                             current_score = section.get('score', 0)
-                            # 使用动态计算的最大分数
                             if current_score < max_score:
                                 update_score(st, "游戏中的知识", 1)
                                 st.markdown("""<script>createFirework();</script>""", unsafe_allow_html=True)
                     else:
                         st.error("❌ 回答错误。")
+
+            # 问题2放在右边
+            with sub_right:
+                st.subheader("B")
+                st.write(questions[1]["question"])
+                answer2 = st.radio("", questions[1]["options"], key="q_1")
+                
+                if st.button("提交", key="submit_1"):
+                    if questions[1]["options"].index(answer2) == questions[1]["correct"]:
+                        st.success("✅ 回答正确！")
+                        score_status = get_score_status(st)
+                        if ('sections' in score_status and 
+                            '游戏中的知识' in score_status['sections']):
+                            section = score_status['sections']['游戏中的知识']
+                            current_score = section.get('score', 0)
+                            if current_score < max_score:
+                                update_score(st, "游戏中的知识", 1)
+                                st.markdown("""<script>createFirework();</script>""", unsafe_allow_html=True)
+                    else:
+                        st.error("❌ 回答错误。")
+
+            st.divider()
         
+            if st.session_state.show_next_content >= 1:
+                st.subheader("回想一下刚才的猜词元游戏")
+            
+            if st.session_state.show_next_content >= 2:
+                st.markdown("""
+                    <h5 class="gradient-content"> 💡 不同颜色的小球 ↔ 不同备选词元</h5>
+                    <h5 class="gradient-content"> 💡 抽取小球 ↔ 选择备选词元</h5>
+                    <h5 class="gradient-content"> 💡 小球数量的比例 ↔ 选择备选词元的概率</h5>
+                    """, unsafe_allow_html=True
+                )
+
         if st.button("继续", key="continue_button"):
             # 显示右侧内容
+            st.session_state.show_next_content += 1
             st.session_state.show_right_column += 1
             st.rerun()
 
+
+
         with sum_right:
-            if st.session_state.show_right_column != 0:
+            if st.session_state.show_next_content >= 3:
                 logo_l, logo_r = st.columns([0.05, 0.95])
                 with logo_l:
                     st.markdown("<h2>🌡️</h2>", unsafe_allow_html=True)
@@ -578,7 +619,7 @@ def main():
             # 创建两列来展示选项
             temp_col1, temp_col2 = st.columns(2)
             
-            if st.session_state.show_right_column > 1:
+            if st.session_state.show_next_content >= 4:
                 with temp_col1:
                     st.markdown("""
                         <div class="temp-box-left">
@@ -595,9 +636,9 @@ def main():
                         </div>
                     """, unsafe_allow_html=True)
             
-            if st.session_state.show_right_column > 2:
+            if st.session_state.show_next_content >= 5:
                 st.markdown("")
-                st.subheader("温度，用来调节回复内容的「随机性」")
+                st.subheader("🌡️ 温度，用来调节回复内容的「随机性」")
                 st.markdown("""
                             <h5 class="gradient-content">⬆提高温度，选项之间概率差别变小，答案更「随机」，LLM更能拼凑出「开脑洞」的答案；</h5>
                             """, unsafe_allow_html=True

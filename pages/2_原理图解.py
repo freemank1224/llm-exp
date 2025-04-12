@@ -33,7 +33,7 @@ def main():
             font-weight: 1000;
             text-align: center;
             padding: 20px 0;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .tab-content {
             padding: 20px;
