@@ -206,19 +206,19 @@ def main():
 
         /* 添加新的渐变文本样式 */
         .gradient-text {
-            font-size: 3 em;  /* 统一字体大小 */
+            font-size: 3em;  /* 修改为3em，与base-text一致 */
             background: linear-gradient(120deg, #ffbe00 0%, #ff7c00 40%, #dd0000 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: bold;
             display: inline;
-            margin: 10 10px;  /* 增加左右间距 */
-            padding: 5px 10px;  /* 增加内边距 */
+            margin: 0 10px;
+            padding: 5px 10px;
         }
         
         /* 修改词元样式 */
         .token-normal {
-            font-size: 2.5em;  /* 统一字体大小 */
+            font-size: 3em;  /* 修改为3em，与base-text一致 */
             font-weight: bold;
             color: #666;
             display: inline;
@@ -226,34 +226,18 @@ def main():
         
         /* 基础句子样式 */
         .base-text {
-            font-size: 3em;  /* 调整为和词元一致的大小 */
+            font-size: 3em;  /* 保持3em作为基准大小 */
             font-weight: bold;
             display: inline;
         }
-                
-        /* 词元选项容器 */
-        .token-options {
-            font-size: 1.5em;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            padding: 5px 25px;  /* 增加内边距使色块更大 */
-            border-radius: 5px;  /* 增加圆角 */
-            margin: 2px 0;      /* 增加外边距 */
-            transition: all 0.3s ease;  /* 添加过渡效果 */
-        }
-        
-        .token-options:hover {
-            transform: scale(1.02);  /* 添加悬停效果 */
-        }
-        
-        /* 增大句子显示 */
+
+        /* 调整大句子容器的样式以容纳更大的文本 */
         .large-sentence {
-            line-height: 1.5;
-            padding: 30px;
+            line-height: 1.8;  /* 增加行高以适应更大的文本 */
+            padding: 40px;     /* 增加内边距 */
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
-            margin: 30px 0;
+            margin: 40px 0;    /* 增加外边距 */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
@@ -283,6 +267,26 @@ def main():
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+        /* 词元选项容器 */
+        .token-options {
+            font-size: 1.6em;  /* 增大到与基础文本一致 */
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            padding: 3px 20px;  /* 增加内边距使色块更大 */
+            border-radius: 8px;  /* 稍微增大圆角 */
+            margin: 2px 0;     /* 增加选项间距 */
+            transition: all 0.3s ease;
+            line-height: 1.5;   /* 调整行高 */
+        }
+        
+        /* 调整词元选项容器的样式 */
+        .token-options-container {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            margin-top: 10px;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -380,12 +384,11 @@ def main():
                 "rgba(153, 102, 255, 0.2)"   # 紫色
             ]
 
-            st.markdown('<div class="token-options-container">', unsafe_allow_html=True)
+            # st.markdown('<div class="token-options-container">', unsafe_allow_html=True)
             
             for i, option in enumerate(st.session_state.token_options[st.session_state.token_index]):
                 color = colors[i % len(colors)]
-                col1, col2 = st.columns([0.7, 0.3])
-                
+                col1, _, col2 = st.columns([0.65, 0.05, 0.3])
                 with col1:
                     st.markdown(
                         f'<div class="token-options" style="background-color: {color};">{option}</div>',

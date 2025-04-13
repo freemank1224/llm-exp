@@ -28,7 +28,7 @@ def main():
     if 'predictor' not in st.session_state:
         st.session_state.predictor = LLMPredictor()
 
-    st.markdown('<h1 class="gradient-title">游戏时间：下一个「词元」预测</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="gradient-title">动手试试看：下一个「词元」预测</h1>', unsafe_allow_html=True)
     # st.markdown("<h3 style='text-align: center;'>英文模型：GPT-2，中文模型：Qwen2-1.5B，Top-K采样</h3>", unsafe_allow_html=True)
 
     # 初始化其他 session state

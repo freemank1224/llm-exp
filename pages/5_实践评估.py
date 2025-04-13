@@ -52,12 +52,88 @@ def main():
     """, unsafe_allow_html=True)
 
     # 修改标题和副标题样式以匹配原理图解页面
-    st.markdown('<h1 class="gradient-title">测一测你的学习成果</h1>', unsafe_allow_html=True)
-    st.markdown('<p style="text-align: center; font-size: 1.5em; color: #666;">通过这些练习，检验你对语言模型的理解程度</p>', unsafe_allow_html=True)
+    st.markdown('<h1 class="gradient-title">谢谢观看！</h1>', unsafe_allow_html=True)
+    # st.markdown('<p style="text-align: center; font-size: 1.5em; color: #666;">你可以通过本页的问题，检查一下自己是否理解了LLM的原理</p>', unsafe_allow_html=True)
 
     # 创建标签页
-    tab1, tab2, tab3 = st.tabs(["📝 练习题", "📊 成绩统计", "🎯 学习目标"])
+    tab0, tab1, tab2, tab3 = st.tabs(["🎆更多有趣的内容", "📝 练习题", "📊 成绩统计", "🎯 学习目标"])
 
+    with tab0:
+        st.markdown("<h2 class='gradient-title'>💡知识在于分享，本项目已在Github上开源💡</h2>", unsafe_allow_html=True)  # 添加小标题
+        st.markdown('''
+            <a href="https://github.com/freemank1224/llm-exp/tree/presentation" target="_blank" style="
+                display: inline-block;
+                padding: 10px 20px;
+                background: linear-gradient(120deg, #ffbe00 0%, #ff7c00 40%, #dd0000 100%);
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                font-size: 1.2em;
+                text-align: center;
+                margin: 20px auto;
+                display: block;
+                width: fit-content;">
+                访问本项目的 Github 仓库
+            </a>
+        ''', unsafe_allow_html=True)
+        sub_l, sub_m, sub_r = st.columns([0.3, 0.4, 0.3])
+        with sub_l:
+            st.markdown("")
+        with sub_m:
+            st.markdown("""
+                <div style="
+                margin: 20px auto;
+                padding: 20px;
+                background-color: rgba(255, 235, 59, 0.1);
+                border: 2px solid #FFD700;
+                border-radius: 10px;
+                ">
+                <p style="margin-bottom: 0; font-size: 1.2em; color: #FFF;">
+                本项目支持基于英伟达GPU/CPU/MacOS三种环境下的本机部署和运行，但为了保证演示性能，建议在GPU或MacOS上运行。
+                </p>
+                </div>
+            """, unsafe_allow_html=True)  
+            st.divider()
+
+        with sub_r:
+            st.markdown("") 
+
+        st.markdown("<h2 class='gradient-title'>💡也欢迎关注我的公众号：AI4EDU新视野💡</h2>", unsafe_allow_html=True)  # 添加小标题 
+        st.markdown("")
+        low_l, low_m, low_r = st.columns([0.25, 0.5, 0.25])
+        with low_l:
+            st.markdown("")
+        with low_m:
+            mlow_l, _, mlow_r = st.columns([0.25, 0.05, 0.7])
+            with mlow_l:
+                st.image("./images/QR_code.jpg", use_container_width=True)
+            with mlow_r:
+                st.markdown("""
+                    <div style="
+                    margin: 0px auto;
+                    padding: 20px;
+                    background-color: rgba(255, 235, 59, 0.1);
+                    border: 2px solid #999;
+                    border-radius: 0px;
+                    ">
+                    <p style="margin-bottom: 0; font-size: 1.2em; color: #FFF;">
+                    ✅ 为教育从业者提供最贴近需求的AI教育内容
+                    </p>
+                    <p style="margin-bottom: 0; font-size: 1.2em; color: #FFF;">
+                    ✅ 聚焦教育领域的创业者，体验全新的AI4EDU产品
+                    </p>
+                    <p style="margin-bottom: 0; font-size: 1.2em; color: #FFF;">
+                    ✅ 教育与AI交叉领域内，有志于变革传统教育范式的的伙伴
+                    </p>
+                    </div>
+                """, unsafe_allow_html=True)
+        with low_r:
+            st.markdown("")
+            
+
+
+    
+    
     with tab1:
         st.subheader("理论知识测试")  # 添加小标题
         st.markdown('<div class="tab-content">', unsafe_allow_html=True)
