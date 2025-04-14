@@ -1,29 +1,7 @@
-# 核心功能
-streamlit==1.41.1
+streamlit==1.44.1
 torch==2.1.0 --extra-index-url https://download.pytorch.org/whl/cu118
-transformers==4.35.0
-tokenizers==0.14.1
+transformers==4.40.2
+tokenizers==0.19.1
 
-# 数据处理
-numpy==1.24.3
-pandas==2.0.3
-Pillow==10.0.0
-
-# Hugging Face
-huggingface-hub==0.19.4
-safetensors==0.4.0
-
-# 工具包
-GitPython==3.1.40
-protobuf==4.24.4
-PyYAML==6.0.1
-requests==2.31.0
-tqdm==4.66.1
-regex==2023.10.3
-
-# Streamlit依赖
-altair==5.1.2
-rich==13.6.0
-toml==0.10.2
-packaging==23.2
-typing_extensions==4.8.0
+plotly==6.0.1
+matlplotlib==3.9.4
