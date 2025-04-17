@@ -522,15 +522,15 @@ def main():
             # 定义问题列表
             questions = [
                 {
-                    "question": "数量少的小球会被抽到吗？",
+                    "question": "数量占比少的小球会被抽到吗？",
                     "options": [
-                        "😊如果抽取的次数足够多，那么即便数量很少的小球也会被抽到",
-                        "😭它永远都不会被抽到"
+                        "😊 如果抽取的次数足够多，也会被抽到",
+                        "😭 永远都不会被抽到"
                     ],
                     "correct": 0
                 },
                 {
-                    "question": "某个小球对应的概率非常大，说明：",
+                    "question": "某颜色的小球数量占比特别大，那么：",
                     "options": [
                         "如果抽取一次，这个小球一定会被抽到",
                         "这个小球会被抽到的可能性更大"
@@ -593,7 +593,7 @@ def main():
                 st.markdown("""
                     <h5 class="gradient-content"> 💡 不同颜色的小球 ↔ 不同备选词元</h5>
                     <h5 class="gradient-content"> 💡 抽取小球 ↔ 选择备选词元</h5>
-                    <h5 class="gradient-content"> 💡 小球数量的比例 ↔ 选择备选词元的概率</h5>
+                    <h5 class="gradient-content"> 💡 小球数量的比例 ↔ 被抽到的可能性 ↔ 选择备选词元的概率</h5>
                     """, unsafe_allow_html=True
                 )
 

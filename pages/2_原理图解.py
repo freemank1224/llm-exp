@@ -314,7 +314,7 @@ def main():
     tabs = st.tabs(["你是怎么写作文的", "「写话」的技巧", "大语言模型如何「写作文」", "什么是「词元」"])
     
     # 基础句子
-    base_sentence = "今天星期六，天气晴朗，我和"
+    base_sentence = "今天星期六，天气很好，我和"
 
 
     with tabs[1]:
@@ -322,7 +322,7 @@ def main():
         with top_l:
             st.markdown("""
                     <div class="fade-in">
-                    <h2>我们如何写出一句话？</h2>
+                    <h2>如何写出一句话？</h2>
                     </div>
                 """, unsafe_allow_html=True)
         with top_r:
@@ -412,7 +412,7 @@ def main():
         if st.session_state.current_step >= 0:
             st.markdown("""
                 <div class="fade-in">
-                <h2>1. 「大语言模型」如何回答你的问题？</h2>
+                <h2>1. 「大语言模型」怎么写话的？</h2>
                 </div>
             """, unsafe_allow_html=True)
             
