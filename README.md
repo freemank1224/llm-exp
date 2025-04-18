@@ -1,4 +1,4 @@
-# LLM 预测项目
+# 「神奇的猜词小能手」—— 给孩子的互动式大语言模型科普节目
 
 这是一个为没有AI基础知识的小学/中学生讲解大型语言模型（LLM）预测原理的互动演示项目。旨在通过交互式页面和演示来解释LLM的工作原理。采用此项目，能够远超PPT的实时互动演示效果，生动的讲述LLM的「下一个词元预测」的工作机制。
 
@@ -40,7 +40,7 @@ streamlit run Home.py
 
 
 ---
-# LLM Prediction Project
+# 「Magic Token Predictor」: An interactive course of LLM prediction princeple for kids
 
 This is an interactive demonstration project designed to explain the principles of Large Language Models (LLMs) to primary/secondary school students who have no AI background knowledge. It aims to explain how LLMs work through interactive pages and demonstrations. By utilizing this project, we can achieve real-time interactive demonstration effects far beyond PowerPoint presentations, vividly illustrating the "next token prediction" mechanism of LLMs.
 
