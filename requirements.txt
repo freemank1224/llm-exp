@@ -53,3 +53,4 @@ transformers==4.48.1
 typing_extensions==4.12.2
 tzdata==2025.1
 urllib3==1.26.20
+matplotlib>=3.0.0
