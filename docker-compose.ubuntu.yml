@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  llm-demo:
+    build:
+      context: .
+      dockerfile: Dockerfile.ubuntu
+    container_name: llm-demo-ubuntu
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data  # 如果有数据目录
+      - ~/.cache/huggingface:/root/.cache/huggingface  # 模型缓存
+    environment:
+      - PYTHONUNBUFFERED=1
+      - STREAMLIT_SERVER_HEADLESS=true
+      - STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

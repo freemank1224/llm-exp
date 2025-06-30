@@ -1,0 +1,52 @@
+# Ubuntu 22.04 + Python 3.10 Docker配置
+FROM ubuntu:22.04
+
+# 设置环境变量
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# 设置工作目录
+WORKDIR /app
+
+# 安装系统依赖
+RUN apt-get update && apt-get install -y \
+    python3.10 \
+    python3.10-venv \
+    python3.10-dev \
+    python3-pip \
+    build-essential \
+    git \
+    curl \
+    wget \
+    libssl-dev \
+    libffi-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libfreetype6-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# 创建符号链接
+RUN ln -s /usr/bin/python3.10 /usr/bin/python
+
+# 升级pip
+RUN python -m pip install --upgrade pip
+
+# 复制requirements文件
+COPY requirements_lin.txt .
+
+# 安装Python依赖
+RUN pip install -r requirements_lin.txt
+
+# 复制应用代码
+COPY . .
+
+# 创建缓存目录
+RUN mkdir -p /root/.cache/huggingface/
+
+# 暴露端口
+EXPOSE 8501
+
+# 设置启动命令
+CMD ["streamlit", "run", "Home.py", "--server.port=8501", "--server.address=0.0.0.0"]
