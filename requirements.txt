@@ -9,7 +9,7 @@ huggingface-hub==0.26.2  # 降级到更稳定的版本
 # Streamlit和Web界面相关
 streamlit==1.39.0  # 降级到更稳定的版本
 altair==5.2.0  # 降级到更稳定的版本
-pydeck==0.8.1  # 降级到更稳定的版本
+pydeck==0.8.0  # 降级到更稳定的版本
 
 # 数据处理和科学计算
 numpy==1.24.4  # 使用与Python 3.10兼容的稳定版本
