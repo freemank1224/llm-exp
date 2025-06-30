@@ -265,7 +265,8 @@ def main():
             import numpy as np
             
             # 设置中文字体
-            plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+            # plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+            plt.rcParams['font.sans-serif'] = ['Noto Sans CJK SC', 'sans-serif']
             plt.rcParams['axes.unicode_minus'] = False
 
             # 更新数据
