@@ -63,6 +63,23 @@ sudo apt install -y \
     gfortran
 ```
 
+### 中文字体支持（重要！）
+
+```bash
+sudo apt install -y \
+    fonts-noto-cjk \
+    fonts-noto-cjk-extra \
+    fonts-wqy-zenhei \
+    fonts-wqy-microhei \
+    fonts-arphic-ukai \
+    fonts-arphic-uming \
+    fonts-liberation \
+    fontconfig
+
+# 更新字体缓存
+sudo fc-cache -fv
+```
+
 ### 可选：GPU支持（如果有NVIDIA GPU）
 
 ```bash
@@ -102,7 +119,18 @@ sudo apt update && sudo apt install -y \
     liblapack-dev \
     libatlas-base-dev \
     gfortran \
-    pkg-config
+    pkg-config \
+    fonts-noto-cjk \
+    fonts-noto-cjk-extra \
+    fonts-wqy-zenhei \
+    fonts-wqy-microhei \
+    fonts-arphic-ukai \
+    fonts-arphic-uming \
+    fonts-liberation \
+    fontconfig
+
+# 更新字体缓存
+sudo fc-cache -fv
 ```
 
 ## 验证安装
@@ -167,6 +195,22 @@ sudo apt install -y build-essential python3.10-dev
 sudo apt install -y libjpeg-dev libpng-dev libfreetype6-dev
 pip install --upgrade pip
 pip install Pillow --force-reinstall
+```
+
+### 5. 中文字体显示问题
+
+如果遇到中文字体显示问题或字体警告：
+
+```bash
+# 运行字体修复脚本
+./fix_fonts.sh
+
+# 或者手动安装字体
+sudo apt install -y fonts-noto-cjk fonts-wqy-zenhei
+sudo fc-cache -fv
+
+# 清除matplotlib字体缓存
+python3 -c "import matplotlib.font_manager as fm; fm._rebuild()"
 ```
 
 ## 性能优化建议

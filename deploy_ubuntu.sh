@@ -73,9 +73,9 @@ check_python() {
 # 安装系统依赖
 install_system_deps() {
     log_info "安装系统依赖..."
-    
+
     sudo apt update
-    
+
     # 安装必要的系统包
     sudo apt install -y \
         python3-pip \
@@ -91,8 +91,23 @@ install_system_deps() {
         libpng-dev \
         libfreetype6-dev \
         pkg-config
-    
-    log_success "系统依赖安装完成"
+
+    # 安装中文字体支持
+    log_info "安装中文字体支持..."
+    sudo apt install -y \
+        fonts-noto-cjk \
+        fonts-noto-cjk-extra \
+        fonts-wqy-zenhei \
+        fonts-wqy-microhei \
+        fonts-arphic-ukai \
+        fonts-arphic-uming \
+        fonts-liberation \
+        fontconfig
+
+    # 更新字体缓存
+    sudo fc-cache -fv
+
+    log_success "系统依赖和字体安装完成"
 }
 
 # 创建虚拟环境
@@ -143,7 +158,7 @@ check_models() {
 # 创建启动脚本
 create_start_script() {
     log_info "创建启动脚本..."
-    
+
     cat > start_app.sh << 'EOF'
 #!/bin/bash
 
@@ -152,13 +167,21 @@ source venv/bin/activate
 
 # 设置环境变量
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
+export MPLBACKEND=Agg
+export PYTHONWARNINGS=ignore::UserWarning
+
+# 加载Ubuntu环境配置
+if [[ -f ".env.ubuntu" ]]; then
+    source .env.ubuntu
+fi
 
 # 启动Streamlit应用
 echo "启动大语言模型演示应用..."
 echo "应用将在 http://localhost:8501 启动"
 echo "按 Ctrl+C 停止应用"
 
-streamlit run Home.py --server.port=8501 --server.address=0.0.0.0
+# 使用带字体修复的启动方式
+streamlit run app_with_font_fix.py --server.port=8501 --server.address=0.0.0.0
 EOF
 
     chmod +x start_app.sh

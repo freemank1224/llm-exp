@@ -174,6 +174,16 @@ streamlit run Home.py --server.port=8501 --server.address=0.0.0.0
    chmod +x start_app.sh
    ```
 
+5. **中文字体显示问题**
+   ```bash
+   # 运行字体修复脚本
+   ./fix_fonts.sh
+
+   # 或者手动修复
+   sudo apt install -y fonts-noto-cjk fonts-wqy-zenhei
+   sudo fc-cache -fv
+   ```
+
 ### 日志查看
 
 - **Streamlit日志**: 直接在终端查看
