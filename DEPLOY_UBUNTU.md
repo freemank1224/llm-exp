@@ -184,6 +184,15 @@ streamlit run Home.py --server.port=8501 --server.address=0.0.0.0
    sudo fc-cache -fv
    ```
 
+6. **Streamlit版本兼容性问题**
+   ```bash
+   # 如果遇到 use_container_width 错误
+   ./fix_streamlit_compatibility.sh
+
+   # 或者手动升级Streamlit
+   pip install streamlit==1.39.0
+   ```
+
 ### 日志查看
 
 - **Streamlit日志**: 直接在终端查看

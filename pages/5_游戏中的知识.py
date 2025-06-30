@@ -123,7 +123,7 @@ def display_results(container, total_sampling_results, colors):
             uniformtext=dict(mode='hide', minsize=12)
         )
         
-        container.plotly_chart(fig, use_container_width=False)
+        container.plotly_chart(fig)
 
 def main():
     # 初始化分数状态
@@ -455,7 +455,7 @@ def main():
             st.subheader("球箱预览")
             if total_balls == 100:
                 fig = create_ball_box(st.session_state.balls_data, colors)
-                st.plotly_chart(fig, use_container_width=True, key="box_preview")
+                st.plotly_chart(fig, key="box_preview")
             else:
                 st.warning("请确保总球数为100个")
 
@@ -484,9 +484,9 @@ def main():
             # 将两个按钮放在同一行
             button_cols = st.columns(2)
             with button_cols[0]:
-                sample_button = st.button("连续抽取", key="sample_button", use_container_width=True)
+                sample_button = st.button("连续抽取", key="sample_button")
             with button_cols[1]:
-                reset_button = st.button("重置抽样结果", key="reset_button", use_container_width=True)
+                reset_button = st.button("重置抽样结果", key="reset_button")
             
             # 处理按钮点击事件
             if reset_button:

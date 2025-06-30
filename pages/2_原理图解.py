@@ -328,7 +328,6 @@ def main():
         with top_r:
             if st.button(
                 "点此重置",
-                use_container_width=False,
                 type="secondary"
             ):
                 st.session_state.completed_tokens = []
@@ -364,7 +363,7 @@ def main():
                 "输入你想到的词:",
                 key=f"new_option_{st.session_state.token_index}_{st.session_state.input_key}"
             )
-            if st.button("添加", key=f"add_{st.session_state.token_index}", use_container_width=True) and new_option:
+            if st.button("添加", key=f"add_{st.session_state.token_index}") and new_option:
                 current_options = st.session_state.token_options[st.session_state.token_index]
                 if new_option not in current_options:
                     current_options.append(new_option)
@@ -398,7 +397,6 @@ def main():
                     if st.button(
                         "选择",
                         key=f"option_{st.session_state.token_index}_{i}",
-                        use_container_width=True,
                         type="primary"
                     ):
                         st.session_state.completed_tokens.append(option)
@@ -572,7 +570,6 @@ def main():
                     current_image = images[st.session_state.carousel_index]
                     st.image(
                     current_image['path'],
-                    use_container_width=True,
                     caption=f"图像 {st.session_state.carousel_index + 1}/{len(images)}: {current_image['caption']}"
                     )
                 
@@ -624,10 +621,10 @@ def main():
         
             # 在第一个内容块显示后显示SVG
             if st.session_state.block_index >= 1:
-                st.image('./images/DiaryNew.svg', use_container_width=True, caption="图像来源：由AI生成")
+                st.image('./images/DiaryNew.svg', caption="图像来源：由AI生成")
 
         with col_tab[0]:
-            st.image('./images/writingBoy.png', use_container_width=True, caption="图像为AI生成")
+            st.image('./images/writingBoy.png', caption="图像为AI生成")
 
         # 添加下一步按钮
         if st.button("下一步", key="next_block"):

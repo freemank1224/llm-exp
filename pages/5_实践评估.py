@@ -106,7 +106,7 @@ def main():
         with low_m:
             mlow_l, _, mlow_r = st.columns([0.25, 0.05, 0.7])
             with mlow_l:
-                st.image("./images/QR_code.jpg", use_container_width=True)
+                st.image("./images/QR_code.jpg")
             with mlow_r:
                 st.markdown("""
                     <div style="
