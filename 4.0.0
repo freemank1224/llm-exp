@@ -1,0 +1,3 @@
+Requirement already satisfied: plotly in /opt/miniconda3/envs/llm-exp/lib/python3.10/site-packages (6.0.1)
+Requirement already satisfied: narwhals>=1.15.1 in /opt/miniconda3/envs/llm-exp/lib/python3.10/site-packages (from plotly) (1.24.1)
+Requirement already satisfied: packaging in /opt/miniconda3/envs/llm-exp/lib/python3.10/site-packages (from plotly) (24.2)
