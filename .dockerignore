@@ -18,3 +18,22 @@ coverage.xml
 .mypy_cache
 .pytest_cache
 .hypothesis
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# 开发工具
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# 本地模型缓存（我们会在Docker中重新下载）
+models/
+
+# Git 相关
+.gitignore

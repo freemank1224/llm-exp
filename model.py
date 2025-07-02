@@ -1,4 +1,4 @@
-from transformers import GPT2Tokenizer, GPT2LMHeadModel, AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 import torch.nn.functional as F
 import os
@@ -17,7 +17,12 @@ os.environ['CURL_CA_BUNDLE'] = ''
 
 class LLMPredictor:
     def __init__(self):
-        self.cache_dir = os.path.expanduser("~/.cache/huggingface/")
+        # 在Docker环境中使用镜像内的缓存目录，否则使用用户主目录
+        if os.path.exists("/app/models"):
+            self.cache_dir = "/app/models"
+        else:
+            self.cache_dir = os.path.expanduser("~/.cache/huggingface/")
+        
         os.makedirs(self.cache_dir, exist_ok=True)
         
         # 预初始化设备
@@ -29,75 +34,48 @@ class LLMPredictor:
             self.device = torch.device("cpu")
             
         print(f"Using device: {self.device}")
+        print(f"Using cache directory: {self.cache_dir}")
         
-        # 初始化其他属性
-        self.zh_model = None
-        self.zh_tokenizer = None
-        self.en_model = None
-        self.en_tokenizer = None
+        # 统一使用 Qwen2-1.5B 模型处理中英文
+        self.model_name = "Qwen/Qwen2-1.5B"
+        self.model = None
+        self.tokenizer = None
         self.current_lang = None
 
-    def _load_chinese_model(self):
-        if self.zh_model is None:
+    def _load_unified_model(self):
+        """加载统一的 Qwen2-1.5B 模型，用于处理中英文"""
+        if self.model is None:
             try:
-                # 禁用SSL验证
-                self.zh_tokenizer = AutoTokenizer.from_pretrained(
-                    "Qwen/Qwen2-1.5B",
+                self.tokenizer = AutoTokenizer.from_pretrained(
+                    self.model_name,
                     trust_remote_code=True,
                     cache_dir=self.cache_dir
                 )
-                self.zh_model = AutoModelForCausalLM.from_pretrained(
-                    "Qwen/Qwen2-1.5B",
+                self.model = AutoModelForCausalLM.from_pretrained(
+                    self.model_name,
                     trust_remote_code=True,
                     cache_dir=self.cache_dir
                 )
-                self.current_lang = "中文"
-                # 2025.3.3 SEG BEGIN
-                self.zh_model.to(self.device)
-                print(f"ZH model is loaded on {self.device}")
-                # SEG END
-            except Exception as e:
-                print(f"加载中文模型失败: {str(e)}")
-                return False
-        return True
-
-    def _load_english_model(self):
-        if self.en_model is None:
-            try:
-                # 禁用SSL验证
-                self.en_tokenizer = GPT2Tokenizer.from_pretrained(
-                    'gpt2', 
-                    cache_dir=self.cache_dir
-                )
-                if self.en_tokenizer.pad_token is None:
-                    self.en_tokenizer.pad_token = self.en_tokenizer.eos_token
-                
-                # 再加载模型
-                self.en_model = GPT2LMHeadModel.from_pretrained(
-                    'gpt2', 
-                    cache_dir=self.cache_dir
-                )
-                self.current_lang = "英文"
-                self.en_model.to(self.device)
-                print(f"EN model is loaded on {self.device}")
+                self.model.to(self.device)
+                print(f"Unified model {self.model_name} is loaded on {self.device}")
                 return True
             except Exception as e:
-                print(f"加载英文模型失败: {str(e)}")
-                self.en_tokenizer = None  # 确保在失败时设置为None
-                self.en_model = None
+                print(f"加载统一模型失败: {str(e)}")
                 return False
         return True
 
     def _get_model_and_tokenizer(self, model_lang):
-        """获取对应语言的模型和分词器"""
+        """获取统一的模型和分词器（不再区分语言）"""
+        if not self._load_unified_model():
+            raise ValueError("无法加载统一模型")
+        # 为了兼容性，添加语言相关的属性访问
         if model_lang == "中文":
-            if not self._load_chinese_model():
-                raise ValueError("无法加载中文模型")
-            return self.zh_model, self.zh_tokenizer
+            self.zh_model = self.model
+            self.zh_tokenizer = self.tokenizer
         else:
-            if not self._load_english_model():
-                raise ValueError("无法加载英文模型")
-            return self.en_model, self.en_tokenizer
+            self.en_model = self.model  
+            self.en_tokenizer = self.tokenizer
+        return self.model, self.tokenizer
 
     def generate_next_token(self, input_text, model_lang = "中文", temperature = 1.0, top_k = 8):
         # 1. Encode the input text

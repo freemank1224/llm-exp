@@ -1,4 +1,10 @@
 import streamlit as st
+import sys
+import os
+
+# 添加父目录到路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from model import LLMPredictor
 import time
 import random  # 添加这一行
@@ -29,7 +35,7 @@ def main():
         st.session_state.predictor = LLMPredictor()
 
     st.markdown('<h1 class="gradient-title">动手试试看：下一个「词元」预测</h1>', unsafe_allow_html=True)
-    # st.markdown("<h3 style='text-align: center;'>英文模型：GPT-2，中文模型：Qwen2-1.5B，Top-K采样</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center;'>统一模型：Qwen2-1.5B，支持中英文，Top-K采样</h3>", unsafe_allow_html=True)
 
     # 初始化其他 session state
     if 'generated_text' not in st.session_state:
@@ -146,13 +152,14 @@ def main():
 
         # 词库长度显示
         try:
-            if st.session_state.model_lang == "中文":
-                token_len = (st.session_state.predictor.zh_tokenizer.vocab_size 
-                           if st.session_state.predictor.zh_tokenizer is not None 
-                           else "模型未加载")
+            # 统一使用 Qwen2-1.5B 模型，不再区分中英文
+            if st.session_state.predictor.tokenizer is not None:
+                token_len = st.session_state.predictor.tokenizer.vocab_size
             else:
-                token_len = (st.session_state.predictor.en_tokenizer.vocab_size 
-                           if st.session_state.predictor.en_tokenizer is not None 
+                # 为了兼容性，先尝试加载统一模型
+                st.session_state.predictor._load_unified_model()
+                token_len = (st.session_state.predictor.tokenizer.vocab_size 
+                           if st.session_state.predictor.tokenizer is not None 
                            else "模型未加载")
             
             # 更新session state中的token_len
