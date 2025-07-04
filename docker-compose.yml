@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  llm-prediction:
+    image: ghcr.io/freemank1224/llm-exp:latest
+    container_name: llm-prediction-app
+    ports:
+      - "8501:8501"
+    restart: unless-stopped
+    environment:
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2'
+        reservations:
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+# 如果需要持久化数据，可以添加volumes
+# volumes:
+#   app-data:
+#     driver: local
