@@ -14,7 +14,7 @@ echo "🚀 开始构建LLM预测应用Docker镜像..."
 
 # 构建Docker镜像
 echo "📦 正在构建镜像，这可能需要一些时间来下载模型..."
-docker build -t ${IMAGE_NAME}:${TAG} .
+docker build -t ${IMAGE_NAME}:${TAG} -f docker/Dockerfile .
 
 if [ $? -eq 0 ]; then
     echo "✅ 镜像构建成功！"
@@ -30,7 +30,7 @@ echo "🎯 要运行容器，请使用以下命令："
 echo "docker run -p 8501:8501 --name ${CONTAINER_NAME} ${IMAGE_NAME}:${TAG}"
 echo ""
 echo "或者运行以下脚本："
-echo "./run_docker.sh"
+echo "./docker/run_docker.sh"
 echo ""
 
 # 询问是否立即运行

@@ -37,7 +37,7 @@ fi
 # 检查本地镜像是否存在
 if ! docker images ${IMAGE_NAME}:${LOCAL_TAG} | grep -q ${IMAGE_NAME}; then
     echo -e "${RED}❌ 本地镜像 ${IMAGE_NAME}:${LOCAL_TAG} 不存在！${NC}"
-    echo "请先运行 ./build_docker.sh 构建镜像"
+    echo "请先运行 ./docker/build_docker.sh 构建镜像"
     exit 1
 fi
 
@@ -54,6 +54,7 @@ if ! docker system info 2>/dev/null | grep -q "Username: ${GITHUB_USERNAME}"; th
     
     if [[ $REPLY =~ ^[1]$ ]]; then
         echo "正在启动登录助手..."
+        # 使用同目录下的login_docker.sh脚本
         ./login_docker.sh
         if [ $? -ne 0 ]; then
             echo -e "${RED}❌ 登录失败！${NC}"
@@ -64,7 +65,7 @@ if ! docker system info 2>/dev/null | grep -q "Username: ${GITHUB_USERNAME}"; th
         echo -e "${YELLOW}💡 手动登录方法：${NC}"
         echo "1. 运行: docker login ghcr.io -u ${GITHUB_USERNAME}"
         echo "2. 或者: echo YOUR_TOKEN | docker login ghcr.io -u ${GITHUB_USERNAME} --password-stdin"
-        echo "3. 或者: 先运行 ./login_docker.sh 登录"
+        echo "3. 或者: 先运行 ./docker/login_docker.sh 登录"
         echo ""
         echo -e "${RED}❌ 请先登录后再运行此脚本${NC}"
         exit 1

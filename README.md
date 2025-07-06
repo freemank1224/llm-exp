@@ -71,6 +71,7 @@
 ### 2.2 使用 Docker（对应1.2节Docker环境配置完成的情况）
 
 #### 🚀 使用预构建镜像
+
 ```bash
 # 拉取预构建的镜像（包含模型）
 docker pull ghcr.io/freemank1224/llm-exp:latest
@@ -89,10 +90,10 @@ git clone https://github.com/freemank1224/llm-exp.git
 cd llm-exp
 
 # 构建镜像（会自动下载模型到镜像中）
-./build_docker.sh
+./docker/build_docker.sh
 
 # 运行容器
-./run_docker.sh
+./docker/run_docker.sh
 ```
 
 
@@ -186,14 +187,15 @@ docker run -d -p 8501:8501 --name llm-prediction ghcr.io/freemank1224/llm-exp:la
 
 #### 🔨 Build Image Locally
 If you want to try building the image yourself, here only lists the build method for macOS (Linux may also apply, but not verified). For other platforms, please search and try by yourself:
+
 ```bash
 # Clone repository
 git clone https://github.com/freemank1224/llm-exp.git
 cd llm-exp
 
 # Build image (automatically downloads models into the image)
-./build_docker.sh
+./docker/build_docker.sh
 
 # Run container
-./run_docker.sh
+./docker/run_docker.sh
 ```
