@@ -3,9 +3,10 @@
 这是一个为没有AI基础知识的小学/中学生讲解大型语言模型（LLM）预测原理的互动演示项目。旨在通过交互式页面和演示来解释LLM的工作原理。采用此项目，能够远超PPT的实时互动演示效果，生动的讲述LLM的「下一个词元预测」的工作机制。
 
 ## 1. 安装说明
-本项目支持两种安装方式，一个是自己部署本地环境，需要使用`Conda`命令来建立和完成Python的创建和部署；另一种是基于`Docker`，直接拉取镜像即可使用。下面分别说明。
+本项目支持两种安装方式，一个是自己部署本地环境，需要使用`Conda`命令来建立和完成Python的创建和部署；另一种是基于`Docker`，直接拉取镜像即可使用。下面分别说明。**用户在下面两种方式中选择一种即可！**
 
-### 1.1 使用 Conda 
+### 1.1 使用 Conda (推荐) 
+使用`Conda`环境部署可以更清晰的了解代码结构，并方便学习者自定义模型或页面。
 
 #### MacOS 用户（应该也适用于Ubuntu用户，但并未经过验证）
 1. 用户计算机中必须存在Conda环境，如果没有，需要先安装 Miniconda 或 Anaconda：
@@ -34,11 +35,14 @@
    ```
 
 ### 1.2 使用 Docker
-**使用Docker的优势：**
-- ✅ 无需安装Python环境和依赖
-- ✅ 模型已预下载，启动即可使用
-- ✅ 跨平台兼容（Windows/macOS/Linux）
-- ✅ 一键部署，避免环境问题
+使用`Docker`作为部署方式，可以避免环境配置的问题，并快速启动服务。只需要按照下一节`2.2`中所描述的方法拉取镜像文件，并启动即可。
+
+> ⚠️ 注意：不同平台（Windows/Linux/macOS）对应的镜像文件是不同的，混用会出现性能下降甚至无法运行的情况，因此需要根据自己的平台来选择对应的镜像，综合看来，反而并没有方便多少，因此这里还是推荐上面第一种方式，直接使用`Conda`环境进行部署！
+
+**目前构建的镜像：**
+- ✅ 苹果系统macOS with Apple M1/M2/M3/M4
+- ✅ Linux with x86_64
+- ❌ Windows with x86_64 还未完成构建
 
 **安装 Docker 环境**
 在使用 Docker 方式之前，您需要先在计算机上安装 Docker Desktop：
@@ -70,7 +74,8 @@
 
 ### 2.2 使用 Docker（对应1.2节Docker环境配置完成的情况）
 
-#### 🚀 使用预构建镜像
+#### 🚀 使用预构建镜像(不建议初学者尝试或使用)
+
 
 ```bash
 # 拉取预构建的镜像（包含模型）
@@ -83,11 +88,13 @@ docker run -d -p 8501:8501 --name llm-prediction ghcr.io/freemank1224/llm-exp:la
 ```
 
 #### 🔨 本地构建镜像
-如果您要尝试自己构建镜像，这里只列出在MacOS下的构建方法（Linux可能也适用，但未做验证），其它平台请自行搜索和尝试：
-```bash
+⚠️ 这部分仅对于想构建自己系统镜像的使用者而准备。**对于初学者而言，直接使用预构建的镜像即可，无需自己构建镜像。**
+包括`Dockerfile`在内，所有的文件都放在项目的`/docker`目录下。这里只列出在MacOS下的构建方法（Linux可能也适用，但未做验证），其它平台请自行搜索和尝试：
+
+```bashß
 # 克隆仓库
 git clone https://github.com/freemank1224/llm-exp.git
-cd llm-exp
+cd llm-exp/docker
 
 # 构建镜像（会自动下载模型到镜像中）
 ./docker/build_docker.sh
@@ -107,9 +114,10 @@ cd llm-exp
 This is an interactive demonstration project designed to explain the principles of Large Language Models (LLMs) to primary/secondary school students who have no AI background knowledge. It aims to explain how LLMs work through interactive pages and demonstrations. By utilizing this project, we can achieve real-time interactive demonstration effects far beyond PowerPoint presentations, vividly illustrating the "next token prediction" mechanism of LLMs.
 
 ## 1. Installation Instructions
-This project supports two installation methods: one is to deploy the local environment yourself, which requires using `Conda` commands to create and deploy Python; the other is based on `Docker`, where you can directly pull the image to use. The following explains each method separately.
+This project supports two installation methods: one is to deploy the local environment yourself, which requires using `Conda` commands to create and deploy Python; the other is based on `Docker`, where you can directly pull the image to use. The following explains each method separately. **Users only need to choose one of these two methods!**
 
-### 1.1 Using Conda
+### 1.1 Using Conda (Recommended)
+Using the `Conda` environment for deployment allows for a clearer understanding of the code structure and makes it easier for learners to customize models or pages.
 
 #### macOS Users (should also apply to Ubuntu users, but not verified)
 1. The user's computer must have a Conda environment. If not, you need to install Miniconda or Anaconda first:
@@ -138,17 +146,20 @@ This project supports two installation methods: one is to deploy the local envir
    ```
 
 ### 1.2 Using Docker
-**Advantages of using Docker:**
-- ✅ No need to install Python environment and dependencies
-- ✅ Models are pre-downloaded, ready to use on startup
-- ✅ Cross-platform compatibility (Windows/macOS/Linux)
-- ✅ One-click deployment, avoiding environment issues
+Using `Docker` as a deployment method can avoid environment configuration issues and quickly start the service. You only need to follow the methods described in the next section `2.2` to pull the image file and start it.
+
+> ⚠️ Note: Different platforms (Windows/Linux/macOS) correspond to different image files, and mixing them will result in performance degradation or even failure to run. Therefore, you need to choose the corresponding image according to your platform. Overall, this is not much more convenient, so we recommend using the first method above, directly deploying with the `Conda` environment!
+
+**Currently built images:**
+- ✅ macOS with Apple M1/M2/M3/M4
+- ✅ Linux with x86_64
+- ❌ Windows with x86_64 not yet completed
 
 **Installing Docker Environment**
 Before using Docker, you need to install Docker Desktop on your computer:
 
 1. Visit [Docker Desktop Official Website](https://www.docker.com/products/docker-desktop/) to download Docker Desktop for your operating system
-2. Complete the installation following the installation wizard
+2. Follow the installation wizard to complete the installation
 3. Launch Docker Desktop after installation
 4. Wait for the Docker engine to fully start (tray icon shows running status)
 
@@ -174,7 +185,7 @@ The following steps apply to both Windows and macOS systems. The only difference
 
 ### 2.2 Using Docker (Corresponding to Docker environment configuration completed in Section 1.2)
 
-#### 🚀 Using Pre-built Image
+#### 🚀 Using Pre-built Image (Not recommended for beginners)
 ```bash
 # Pull the pre-built image (with models included)
 docker pull ghcr.io/freemank1224/llm-exp:latest
@@ -186,12 +197,13 @@ docker run -d -p 8501:8501 --name llm-prediction ghcr.io/freemank1224/llm-exp:la
 ```
 
 #### 🔨 Build Image Locally
-If you want to try building the image yourself, here only lists the build method for macOS (Linux may also apply, but not verified). For other platforms, please search and try by yourself:
+⚠️ This part is only prepared for users who want to build their own system images. **For beginners, using the pre-built image is sufficient, and there's no need to build the image yourself.**
+All files, including the `Dockerfile`, are located in the project's `/docker` directory. Here only lists the build method for macOS (Linux may also apply, but not verified). For other platforms, please search and try by yourself:
 
 ```bash
 # Clone repository
 git clone https://github.com/freemank1224/llm-exp.git
-cd llm-exp
+cd llm-exp/docker
 
 # Build image (automatically downloads models into the image)
 ./docker/build_docker.sh
