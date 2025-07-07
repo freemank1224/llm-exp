@@ -9,11 +9,12 @@ ENV HF_HOME=/app/models
 ENV TRANSFORMERS_CACHE=/app/models
 ENV HF_DATASETS_CACHE=/app/models
 
-# 复制requirements文件（修正路径问题）
-COPY requirements_win.txt .
+# 复制requirements文件
+COPY requirements.txt .
+COPY docker/download_models.py .
 
 # 安装Python依赖
-RUN pip3 install --no-cache-dir -r requirements_win.txt
+RUN pip3 install --trusted-host pypi.org --trusted-host files.pythonhosted.org --no-cache-dir -r requirements.txt
 
 # 第二阶段：模型下载器 - 在此阶段下载模型
 FROM base AS model-downloader
@@ -27,9 +28,6 @@ RUN apt-get update && apt-get install -y \
 
 # 创建模型缓存目录
 RUN mkdir -p /app/models
-
-# 复制模型预下载脚本
-COPY docker/download_models.py .
 
 # 在构建时下载模型到镜像中
 RUN python download_models.py
