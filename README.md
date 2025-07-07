@@ -1,6 +1,16 @@
 # 「神奇的猜词小能手」—— 给孩子的互动式大语言模型科普节目
 
-这是一个为没有AI基础知识的小学/中学生讲解大型语言模型（LLM）预测原理的互动演示项目。旨在通过交互式页面和演示来解释LLM的工作原理。采用此项目，能够远超PPT的实时互动演示效果，生动的讲述LLM的「下一个词元预测」的工作机制。
+这是一个为没有AI基础知识的小学/中学生讲解大型语言模型（LLM）预测原理的互动演示项目，**也是践行我关于：「AI教育必须使用AI」的基本教育理念的系列尝试之一**。本项目基于页面和演示来解释LLM的工作原理。采用此项目，能够实现PPT无法展示的实时互动效果，生动的讲述LLM的「下一个词元预测」的工作机制。
+
+目前项目基本成型，可以用于**互动化**演示/讲解LLM的「下一个词元预测」行为以及对应的数学原理。项目当前内容和未来的功能计划如下：
+
+✅ 大语言模型的基本常识：什么是LLM，LLM为什么大，LLM预训练的作用等
+✅ 大语言模型「下一个词元预测」基本概念和特点（互动演示）
+✅ 大语言模型「下一个词元预测」的「随机性」和「创造性」（互动演示）
+✅ 大语言模型「下一个词元预测」对应的数学解释：概率抽样（互动演示）
+❓ 大语言模型如何读书：文本向量化、向量嵌入
+❓ 大语言模型的优点和缺点
+❓ 自回归预测模型之外的新进展：扩散语言模型等新技术进展
 
 ## 1. 安装说明
 本项目支持两种安装方式，一个是自己部署本地环境，需要使用`Conda`命令来建立和完成Python的创建和部署；另一种是基于`Docker`，直接拉取镜像即可使用。下面分别说明。**用户在下面两种方式中选择一种即可！**
@@ -111,7 +121,18 @@ cd llm-exp/docker
 ---
 # 「Magic Token Predictor」: An interactive course of LLM prediction principle for kids
 
-This is an interactive demonstration project designed to explain the principles of Large Language Models (LLMs) to primary/secondary school students who have no AI background knowledge. It aims to explain how LLMs work through interactive pages and demonstrations. By utilizing this project, we can achieve real-time interactive demonstration effects far beyond PowerPoint presentations, vividly illustrating the "next token prediction" mechanism of LLMs.
+This is an interactive demonstration project designed to explain the principles of Large Language Models (LLMs) to primary/secondary school students who have no AI background knowledge. **It is also one of my series of attempts to practice the basic educational philosophy of "AI education must use AI."** This project explains the working principles of LLMs through interactive pages and demonstrations. By utilizing this project, we can achieve real-time interactive effects that PowerPoint cannot demonstrate, vividly illustrating the "next token prediction" mechanism of LLMs.
+
+The project is currently well-developed and can be used for **interactive** demonstrations/explanations of LLM's "next token prediction" behavior and its corresponding mathematical principles. The current content and future feature plans of the project are as follows:
+
+✅ Basic knowledge of large language models: What is an LLM, why is it "large," and the role of LLM pre-training, etc.  
+✅ Basic concepts and characteristics of LLM's "next token prediction" (interactive demonstration)  
+✅ The "randomness" and "creativity" of LLM's "next token prediction" (interactive demonstration)  
+✅ Mathematical explanation corresponding to LLM's "next token prediction": probabilistic sampling (interactive demonstration)  
+❓ How LLMs read: text vectorization, vector embedding  
+❓ Advantages and disadvantages of LLMs  
+❓ Advances beyond autoregressive prediction models: new technologies such as diffusion language models  
+
 
 ## 1. Installation Instructions
 This project supports two installation methods: one is to deploy the local environment yourself, which requires using `Conda` commands to create and deploy Python; the other is based on `Docker`, where you can directly pull the image to use. The following explains each method separately. **Users only need to choose one of these two methods!**
