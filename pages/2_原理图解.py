@@ -1,6 +1,22 @@
 import streamlit as st
 import time, os
+from pathlib import Path
+from urllib.parse import quote
 from score_manager import init_score_state, update_score, get_score_status
+
+
+def render_svg(svg_relative_path: str, caption: str = ""):
+    svg_path = Path(__file__).resolve().parents[1] / svg_relative_path
+    with open(svg_path, "r", encoding="utf-8") as svg_file:
+        svg_content = svg_file.read()
+
+    svg_data_url = f"data:image/svg+xml;utf8,{quote(svg_content)}"
+    st.markdown(
+        f'<img src="{svg_data_url}" style="width: 100%; height: auto;" />',
+        unsafe_allow_html=True,
+    )
+    if caption:
+        st.caption(caption)
 
 def main():
     # 初始化 session states
@@ -624,7 +640,7 @@ def main():
         
             # 在第一个内容块显示后显示SVG
             if st.session_state.block_index >= 1:
-                st.image('./images/DiaryNew.svg', use_container_width=True, caption="图像来源：由AI生成")
+                render_svg('images/DiaryNew.svg', caption="图像来源：由AI生成")
 
         with col_tab[0]:
             st.image('./images/writingBoy.png', use_container_width=True, caption="图像为AI生成")
